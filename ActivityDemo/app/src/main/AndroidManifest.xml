@@ -34,6 +34,9 @@
         <activity
             android:name=".RelativeLayoutPageActivity">
         </activity>
+        <activity android:name=".AbsoluteLayoutPageActivity">
+            
+        </activity>
     </application>
 
 </manifest>
