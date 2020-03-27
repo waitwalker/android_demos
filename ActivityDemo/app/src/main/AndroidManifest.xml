@@ -31,6 +31,9 @@
         <activity android:name=".TableLayoutPageActivity">
 
         </activity>
+        <activity
+            android:name=".RelativeLayoutPageActivity">
+        </activity>
     </application>
 
 </manifest>

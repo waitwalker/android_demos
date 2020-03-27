@@ -44,6 +44,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val relatvieButton:Button = findViewById(R.id.button_relative)
+        relatvieButton.setOnClickListener {
+            println("相对布局")
+            val intent:Intent = Intent(this,RelativeLayoutPageActivity().javaClass)
+            startActivity(intent)
+        }
+
     }
 
     override fun onStart() {

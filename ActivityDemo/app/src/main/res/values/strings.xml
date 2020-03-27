@@ -19,5 +19,6 @@
     <string name="text_view_2">TextView2</string>
     <string name="text_view_3">TextView3</string>
     <string name="text_view_4">TextView4</string>
+    <string name="text_view_5">TextView5</string>
 
 </resources>
