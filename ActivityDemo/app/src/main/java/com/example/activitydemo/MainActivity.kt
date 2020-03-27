@@ -23,6 +23,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val  frameButton:Button = findViewById(R.id.main_frame_id)
+        frameButton.setOnClickListener {
+            println("跳转到frame布局,单帧布局")
+            val intent:Intent = Intent(this,FrameLayoutPageActivity().javaClass)
+            startActivity(intent)
+        }
+
     }
 
     override fun onStart() {

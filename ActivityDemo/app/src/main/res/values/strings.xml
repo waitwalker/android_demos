@@ -13,4 +13,7 @@
     <string name="main_page_button_title">跳到第二页</string>
     <string name="second_page_title">Second Page Title</string>
     <string name="second_page_button_title">按钮</string>
+
+    <string name="frame_button_title">Frame按钮</string>
+
 </resources>
