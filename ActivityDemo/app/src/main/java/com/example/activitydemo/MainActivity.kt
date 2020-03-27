@@ -37,6 +37,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val tableButton:Button = findViewById(R.id.button6)
+        tableButton.setOnClickListener {
+            println("表格布局")
+            val intent:Intent = Intent(this,TableLayoutPageActivity().javaClass)
+            startActivity(intent)
+        }
+
     }
 
     override fun onStart() {

@@ -15,5 +15,9 @@
     <string name="second_page_button_title">按钮</string>
 
     <string name="frame_button_title">Frame按钮</string>
+    <string name="text_view_1">TextView1</string>
+    <string name="text_view_2">TextView2</string>
+    <string name="text_view_3">TextView3</string>
+    <string name="text_view_4">TextView4</string>
 
 </resources>

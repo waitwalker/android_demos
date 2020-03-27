@@ -28,6 +28,9 @@
         <activity
             android:name=".LinearLayoutPageActivity">
         </activity>
+        <activity android:name=".TableLayoutPageActivity">
+
+        </activity>
     </application>
 
 </manifest>
