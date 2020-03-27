@@ -8,6 +8,6 @@
         android:layout_marginTop="100dp"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:id="@+id/button1"
+        android:id="@+id/home_button"
         android:text="@string/main_page_button_title"/>
 </LinearLayout>

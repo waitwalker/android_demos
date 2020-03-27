@@ -1,10 +1,12 @@
 package com.example.activitydemo
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 
 import kotlinx.android.synthetic.main.activity_main.*
@@ -14,7 +16,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        val button:Button = findViewById(R.id.button1)
+        val button:Button = findViewById(R.id.home_button)
+        button.setOnClickListener {
+            println("按钮被点击")
+            val intent:Intent = Intent(this,SecondPageActivity().javaClass)
+            startActivity(intent)
+        }
+
     }
 
     override fun onStart() {

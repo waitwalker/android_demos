@@ -14,5 +14,10 @@ class SecondPageActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_second_page)
 
+        val button:Button = findViewById(R.id.button_2)
+        button.setOnClickListener {
+            println("第二页上的按钮被点击了")
+            finish()
+        }
     }
 }
