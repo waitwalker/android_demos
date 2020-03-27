@@ -30,6 +30,13 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val button5:Button = findViewById(R.id.button5)
+        button5.setOnClickListener {
+            println("线性布局")
+            val intent:Intent = Intent(this,LinearLayoutPageActivity().javaClass)
+            startActivity(intent)
+        }
+
     }
 
     override fun onStart() {

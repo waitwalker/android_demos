@@ -25,6 +25,9 @@
         <activity
             android:name=".FrameLayoutPageActivity">
         </activity>
+        <activity
+            android:name=".LinearLayoutPageActivity">
+        </activity>
     </application>
 
 </manifest>

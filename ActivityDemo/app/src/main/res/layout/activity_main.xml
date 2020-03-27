@@ -14,11 +14,17 @@
     </Button>
 
     <Button
-        android:layout_marginStart="100dp"
-        android:layout_marginTop="100dp"
+        android:id="@+id/home_button"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:id="@+id/home_button"
-        android:text="@string/main_page_button_title"/>
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="100dp"
+        android:text="@string/main_page_button_title" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="线性布局按钮" />
 
 </LinearLayout>
