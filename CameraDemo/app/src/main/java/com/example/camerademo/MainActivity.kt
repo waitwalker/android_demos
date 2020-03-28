@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
+import androidx.core.content.ContextCompat
 
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -23,6 +24,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val button:Button = findViewById(R.id.button)
+        button.setBackgroundColor(ContextCompat.getColor(this,R.color.colorBlue))
         button.setOnClickListener {
             println("按钮被点击")
             val intent:Intent = Intent(this,SecondPageActivity().javaClass)
