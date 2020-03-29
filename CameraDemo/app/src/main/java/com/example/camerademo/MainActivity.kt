@@ -1,7 +1,9 @@
 package com.example.camerademo
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.provider.MediaStore
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
@@ -27,8 +29,13 @@ class MainActivity : AppCompatActivity() {
         button.setBackgroundColor(ContextCompat.getColor(this,R.color.colorBlue))
         button.setOnClickListener {
             println("按钮被点击")
-            val intent:Intent = Intent(this,SecondPageActivity().javaClass)
-            startActivity(intent)
+//            val intent:Intent = Intent(this,SecondPageActivity().javaClass)
+//            startActivity(intent)
+            // 打开相机
+            val intent:Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                startActivityForResult(intent, Activity.RESULT_OK)
+            }
         }
     }
 
