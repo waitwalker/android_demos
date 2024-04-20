@@ -26,7 +26,7 @@ class MyAdapter : Adapter<MyAdapter.MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         /// 加载xml layout
         val layoutInflater = LayoutInflater.from(parent.context)
-        val itemView = layoutInflater.inflate(R.layout.cell_normal,parent,false)
+        val itemView = layoutInflater.inflate(R.layout.cell_card,parent,false)
         return MyViewHolder(itemView)
     }
 
