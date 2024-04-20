@@ -3,6 +3,8 @@ package com.sistalk.roombasic
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
+import android.widget.CompoundButton
+import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -19,6 +21,9 @@ class MainActivity : AppCompatActivity() {
     private lateinit var wordViewModel: WordViewModel
     private lateinit var recyclerView: RecyclerView
     private lateinit var myAdapter: MyAdapter
+    private lateinit var myAdapter2: MyAdapter
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private lateinit var switch: Switch
 
     @SuppressLint("NotifyDataSetChanged", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -26,8 +31,17 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         recyclerView = findViewById(R.id.recycleView)
-        myAdapter = MyAdapter()
+        myAdapter = MyAdapter(false)
+        myAdapter2 = MyAdapter(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        switch = findViewById(R.id.switch1)
+        switch.setOnCheckedChangeListener { _: CompoundButton, isChecked: Boolean ->
+            if (isChecked) {
+                recyclerView.adapter = myAdapter2
+            } else {
+                recyclerView.adapter = myAdapter
+            }
+        }
         recyclerView.adapter = myAdapter
         wordViewModel = ViewModelProvider(this)[WordViewModel::class.java]
         buttonInsert = findViewById(R.id.buttonInsert)
@@ -56,8 +70,10 @@ class MainActivity : AppCompatActivity() {
 
         wordViewModel.getAllWordsLive().observe(this) {
             myAdapter.setAllWords(words = it)
+            myAdapter2.setAllWords(words = it)
             // 告诉recycleView通知数据变化了，刷新视图
             myAdapter.notifyDataSetChanged()
+            myAdapter2.notifyDataSetChanged()
         }
 
 
