@@ -1,35 +1,35 @@
 package com.sistalk.roombasic
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 class MainActivity : AppCompatActivity() {
-//    private lateinit var wordDatabase: WordDatabase
-//    private lateinit var wordDao: WordDao
-    private lateinit var textView: TextView
     private lateinit var buttonInsert:Button
     private lateinit var buttonUpdate:Button
     private lateinit var buttonClear:Button
     private lateinit var buttonDelete:Button
-//    private lateinit var allWordsLive:LiveData<List<Word>>
     private lateinit var wordViewModel: WordViewModel
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var myAdapter: MyAdapter
 
+    @SuppressLint("NotifyDataSetChanged", "MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
+        recyclerView = findViewById(R.id.recycleView)
+        myAdapter = MyAdapter()
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.adapter = myAdapter
         wordViewModel = ViewModelProvider(this)[WordViewModel::class.java]
-
-//        wordDatabase = Room.databaseBuilder(this, WordDatabase::class.java, "word_database").allowMainThreadQueries().build()
-//        wordDao = wordDatabase.getWordDao()
-//        allWordsLive = wordDao.getAllWordsLive()
-        textView = findViewById(R.id.textView)
         buttonInsert = findViewById(R.id.buttonInsert)
         buttonUpdate = findViewById(R.id.buttonUpdate)
         buttonClear = findViewById(R.id.buttonClear)
@@ -37,39 +37,27 @@ class MainActivity : AppCompatActivity() {
         this.buttonInsert.setOnClickListener {
             val word1 = Word("Hello", "你好！")
             val word2 = Word("World", "世界！")
-//            wordDao.insertWords(word1, word2)
-//            InsertAsyncTask(wordDao).execute(word1,word2)
             wordViewModel.insertWords(word1,word2)
         }
         this.buttonClear.setOnClickListener {
-//            wordDao.deleteAllWords()
-//            DeleteAllAsyncTask(wordDao).execute()
             wordViewModel.deleteAllWords()
         }
         buttonUpdate.setOnClickListener{
             val word = Word("Hi","你好啊")
             word.id = 103
-//            wordDao.updateWords(word)
-//            UpdateAsyncTask(wordDao).execute(word)
             wordViewModel.updateWords(word)
         }
 
         buttonDelete.setOnClickListener{
             val word = Word("Hi","你好啊")
             word.id = 134
-//            wordDao.deleteWords(word)
-//            DeleteAsyncTask(wordDao).execute(word)
             wordViewModel.deleteWords(word)
         }
 
         wordViewModel.getAllWordsLive().observe(this) {
-
-            var text = ""
-            for (i in 0..<it.count()) {
-                val word: Word = it[i]
-                text += "${word.id}:${word.word}=${word.chineseMeaning}\n"
-            }
-            textView.text = text
+            myAdapter.setAllWords(words = it)
+            // 告诉recycleView通知数据变化了，刷新视图
+            myAdapter.notifyDataSetChanged()
         }
 
 
