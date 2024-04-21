@@ -33,6 +33,7 @@ class FirstFragment : Fragment() {
         viewModel = activity?.let { ViewModelProvider(it) }?.get(FirstViewModel::class.java)!!
         val view:View = inflater.inflate(R.layout.fragment_first, container, false)
         imageView = view.findViewById(R.id.imageView)
+        imageView.rotation = viewModel.rotationPosition
         return view
     }
 
@@ -44,6 +45,7 @@ class FirstFragment : Fragment() {
         imageView.setOnClickListener(View.OnClickListener {
             if (!objectAnimator.isRunning) {
                 objectAnimator.setFloatValues(imageView.rotation,imageView.rotation+100F)
+                viewModel.rotationPosition += 100F
                 objectAnimator.start()
             }
 
