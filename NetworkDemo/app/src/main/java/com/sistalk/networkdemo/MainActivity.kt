@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.VolleyError
@@ -66,34 +67,42 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+        val swipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.swipeRefresh)
 
-        // glide使用
-        val imageView2 = findViewById<ImageView>(R.id.imageView2)
-        Glide.with(this)
-            .load(imageUrl)
-            .placeholder(R.drawable.ic_launcher_foreground)
-            .listener(@SuppressLint("CheckResult") object : RequestListener<Drawable>{
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
+        swipeRefreshLayout.setOnRefreshListener {
+            // glide使用
+            val imageView2 = findViewById<ImageView>(R.id.imageView2)
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(R.drawable.ic_launcher_foreground)
+                .listener(@SuppressLint("CheckResult") object : RequestListener<Drawable>{
+                    override fun onLoadFailed(
+                        e: GlideException?,
+                        model: Any?,
+                        target: Target<Drawable>,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (swipeRefreshLayout.isRefreshing) {
+                            swipeRefreshLayout.isRefreshing = false
+                        }
+                        return false
+                    }
 
-                override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    return false
-                }
-            })
-            .into(imageView2)
-
+                    override fun onResourceReady(
+                        resource: Drawable,
+                        model: Any,
+                        target: Target<Drawable>?,
+                        dataSource: DataSource,
+                        isFirstResource: Boolean
+                    ): Boolean {
+                        if (swipeRefreshLayout.isRefreshing) {
+                            swipeRefreshLayout.isRefreshing = false
+                        }
+                        return false
+                    }
+                })
+                .into(imageView2)
+        }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

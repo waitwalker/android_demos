@@ -37,6 +37,7 @@ android {
 
 dependencies {
 
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.glide)
     implementation(libs.volley)
     implementation(libs.androidx.core.ktx)
@@ -48,3 +49,15 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }
+
+
+
+
+
+
+
+
+
+
+
+
