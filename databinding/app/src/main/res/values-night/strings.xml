@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="add_button">add</string>
+    <string name="play_button">Play</string>
+    <string name="pause_button">Pause</string>
+    <string name="prepare_button">Prepare</string>
+</resources>
