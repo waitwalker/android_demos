@@ -1,14 +1,19 @@
 package com.sistalk.gallery
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +29,7 @@ class GalleryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var viewModel: GalleryViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +37,23 @@ class GalleryFragment : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.swipeIndicator -> {
+                view?.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery)?.isRefreshing = true
+                Handler().postDelayed(Runnable {
+                    viewModel.fetchData()
+                }, 1000)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onCreateView(
@@ -43,17 +66,25 @@ class GalleryFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         val galleryAdapter = GalleryAdapter()
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
         recyclerView.apply {
             adapter = galleryAdapter
-            layoutManager = GridLayoutManager(requireContext(),3)
+            layoutManager = GridLayoutManager(requireContext(), 3)
         }
-        val galleryViewModel = ViewModelProvider(this,ViewModelProvider.AndroidViewModelFactory(requireActivity().application))[GalleryViewModel::class.java]
-        galleryViewModel.photoListLive.observe(viewLifecycleOwner, Observer {
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+        )[GalleryViewModel::class.java]
+        viewModel.photoListLive.observe(viewLifecycleOwner, Observer {
             galleryAdapter.submitList(it)
+            view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         })
-        galleryViewModel.photoListLive.value?:galleryViewModel.fetchData()
+        viewModel.photoListLive.value ?: viewModel.fetchData()
+        view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).setOnRefreshListener {
+            viewModel.fetchData()
+        }
     }
 
     companion object {
