@@ -2,6 +2,7 @@ package com.sistalk.gallery
 
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -49,7 +50,7 @@ class GalleryFragment : Fragment() {
                 when (menuItem.itemId) {
                     R.id.swipeIndicator -> {
                         view?.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery)?.isRefreshing = true
-                        Handler().postDelayed({
+                        Handler(Looper.getMainLooper()).postDelayed({
                             viewModel.fetchData()
                         }, 1000)
                     }
