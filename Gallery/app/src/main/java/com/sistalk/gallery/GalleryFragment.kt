@@ -15,6 +15,7 @@ import androidx.core.view.MenuProvider
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
 // TODO: Rename parameter arguments, choose names that match
@@ -93,7 +94,7 @@ class GalleryFragment : Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
         recyclerView.apply {
             adapter = galleryAdapter
-            layoutManager = GridLayoutManager(requireContext(), 3)
+            layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
         }
         viewModel = ViewModelProvider(
             this,
