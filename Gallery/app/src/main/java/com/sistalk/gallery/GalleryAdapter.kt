@@ -52,7 +52,7 @@ class GalleryAdapter: ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
         }
         Glide.with(holder.itemView)
             .load(getItem(position).previewURL)
-            .placeholder(R.drawable.baseline_all_inbox_24)
+            .placeholder(R.drawable.photo_placeholder)
             .listener(object : RequestListener<Drawable>{
                 override fun onLoadFailed(
                     e: GlideException?,
