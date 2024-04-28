@@ -1,12 +1,15 @@
 package com.sistalk.gallery
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.viewpager2.widget.ViewPager2
 import com.sistalk.gallery.databinding.FragmentPagerPhotoBinding
+import kotlin.collections.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -43,8 +46,44 @@ class PagerPhotoFragment : Fragment() {
         // return inflater.inflate(R.layout.fragment_pager_photo, container, false)
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val photoList: ArrayList<String>? = arguments?.getStringArrayList("photos")
+        PagerPhotoListAdapter().apply {
+            binding.viewPager2.adapter = this
+            val list:ArrayList<PhotoItem> = ArrayList()
+            var index = 0;
+            photoList?.map {
+                val photoItem = PhotoItem(it,index,it)
+                list.add(photoItem)
+                index++
+            }
+            submitList(list)
+        }
 
+        binding.viewPager2.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageScrolled(
+                position: Int,
+                positionOffset: Float,
+                positionOffsetPixels: Int
+            ) {
+                super.onPageScrolled(position, positionOffset, positionOffsetPixels)
+            }
 
+            override fun onPageScrollStateChanged(state: Int) {
+                super.onPageScrollStateChanged(state)
+            }
+
+            @SuppressLint("SetTextI18n")
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                binding.photoTag.text = "${arguments?.getInt("currentIndex")}/${photoList?.size}"
+
+            }
+        })
+
+        binding.viewPager2.setCurrentItem(arguments?.getInt("currentIndex")?:0, false)
+    }
 
     companion object {
         /**

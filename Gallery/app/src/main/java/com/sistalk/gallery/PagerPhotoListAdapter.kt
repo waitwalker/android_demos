@@ -29,7 +29,7 @@ class PagerPhotoListAdapter:ListAdapter<PhotoItem,PagerPhotoViewHolder>(DiffCall
 
     override fun onBindViewHolder(holder: PagerPhotoViewHolder, position: Int) {
         Glide.with(holder.itemView)
-            .load(getItem(position))
+            .load(getItem(position).fullURL)
             .placeholder(R.drawable.baseline_all_inbox_24)
             .into(holder.itemView.findViewById(R.id.pagerPhoto))
     }

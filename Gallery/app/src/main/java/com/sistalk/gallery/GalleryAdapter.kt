@@ -31,7 +31,14 @@ class GalleryAdapter: ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
                 putString("fullURL",photoItem.fullURL)
                 putInt("photoId",photoItem.photoId)
                 putString("previewURL",photoItem.previewURL)
-                holder.itemView.findNavController().navigate(R.id.action_galleryFragment_to_photoFragment, this)
+                val list = ArrayList<String>()
+                currentList.map {
+                    list.add(it.fullURL)
+                }
+                putStringArrayList("photos",list)
+                putInt("currentIndex",holder.adapterPosition)
+//                holder.itemView.findNavController().navigate(R.id.action_galleryFragment_to_photoFragment, this)
+                holder.itemView.findNavController().navigate(R.id.action_galleryFragment_to_pagerPhotoFragment, this)
             }
         })
         return holder
