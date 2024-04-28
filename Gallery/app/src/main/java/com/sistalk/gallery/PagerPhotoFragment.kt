@@ -54,7 +54,7 @@ class PagerPhotoFragment : Fragment() {
             val list:ArrayList<PhotoItem> = ArrayList()
             var index = 0;
             photoList?.map {
-                val photoItem = PhotoItem(it,index,it)
+                val photoItem = PhotoItem(it,index,it,0)
                 list.add(photoItem)
                 index++
             }
