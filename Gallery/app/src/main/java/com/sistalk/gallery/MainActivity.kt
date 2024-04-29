@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        R.drawable.img_2340
     }
 
     override fun onStart() {

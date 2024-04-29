@@ -34,5 +34,11 @@ data class PhotoItem(
     @SerializedName("largeImageURL")
     val fullURL:String,
     @SerializedName("webformatHeight")
-    val photoHeight:Int
+    val photoHeight:Int,
+    @SerializedName("user")
+    val photoUser:String,
+    @SerializedName("likes")
+    val photoLikes:Int,
+    @SerializedName("favorites")
+    val photoFavorites:Int
 )
