@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -52,6 +53,7 @@ class GalleryAdapter: ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
             startShimmerAnimation()
         }
         holder.itemView.findViewById<ImageView>(R.id.imageView).layoutParams.height = getItem(position).photoHeight
+        holder.itemView.findViewById<TextView>(R.id.textViewUser).text = getItem(position).photoUser
         Glide.with(holder.itemView)
             .load(getItem(position).previewURL)
             .placeholder(R.drawable.photo_placeholder)
