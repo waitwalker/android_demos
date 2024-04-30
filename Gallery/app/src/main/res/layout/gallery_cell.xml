@@ -58,6 +58,14 @@
             android:text="TextView"
             tools:layout_editor_absoluteX="99dp"
             tools:layout_editor_absoluteY="477dp" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="85dp"
+            android:layout_height="31dp"
+            app:layout_constraintTop_toTopOf="@+id/textView2"
+            app:srcCompat="@drawable/baseline_ad_units_12"
+            tools:layout_editor_absoluteX="180dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
