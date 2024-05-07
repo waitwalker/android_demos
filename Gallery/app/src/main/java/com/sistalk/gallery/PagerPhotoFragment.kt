@@ -1,6 +1,7 @@
 package com.sistalk.gallery
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -9,11 +10,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.viewpager2.widget.ViewPager2
 import com.sistalk.gallery.databinding.FragmentPagerPhotoBinding
 import kotlin.collections.ArrayList
+import android.Manifest
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -29,6 +34,7 @@ class PagerPhotoFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private val tag = "PagerPhotoFragment"
 
     private lateinit var binding: FragmentPagerPhotoBinding
 
@@ -89,13 +95,43 @@ class PagerPhotoFragment : Fragment() {
         binding.viewPager2.setCurrentItem(arguments?.getInt("currentIndex") ?: 0, false)
 
         binding.imageViewSave.setOnClickListener {
-            if (Build.VERSION.SDK_INT < 29) {
-                Log.d("photo view","");
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                Log.d("photo view","系统API小于29")
+                val hasPermission = hasPermission(requireContext(), PERMISSIONS)
+                if (hasPermission) {
+                    Log.d("PagerPhotoFragment","已经动态获取了权限")
+                } else {
+                    permissionRequestLauncher.launch(PERMISSIONS)
+                }
+            } else {
+                Log.d("photo view","系统API大于29")
+                val hasPermission = hasPermission(requireContext(), PERMISSIONS)
+                if (hasPermission) {
+                    Log.d("PagerPhotoFragment","已经动态获取了权限")
+                } else {
+                    permissionRequestLauncher.launch(PERMISSIONS)
+                }
             }
         }
     }
 
+    private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+        val granted = permissions.entries.all {
+            it.value
+        }
+        if (granted) {
+            Log.d(tag,"权限全部允许")
+        } else {
+            Toast.makeText(requireContext(),"请打开权限",Toast.LENGTH_LONG).show()
+        }
+    }
+
     companion object {
+
+        var PERMISSIONS = arrayOf(
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
@@ -114,4 +150,10 @@ class PagerPhotoFragment : Fragment() {
                 }
             }
     }
+
+    private fun hasPermission(context:Context, permissions:Array<String>):Boolean = permissions.all {
+        ActivityCompat.checkSelfPermission(context,it) == PackageManager.PERMISSION_GRANTED
+    }
+
+
 }
