@@ -17,8 +17,21 @@ import androidx.viewpager2.widget.ViewPager2
 import com.sistalk.gallery.databinding.FragmentPagerPhotoBinding
 import kotlin.collections.ArrayList
 import android.Manifest
+import android.content.ContentValues
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Environment
+import android.provider.MediaStore
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.graphics.drawable.toBitmap
+import androidx.core.view.get
+import androidx.recyclerview.widget.RecyclerView
+import uk.co.senab.photoview.PhotoView
+import java.io.File
+import java.io.FileOutputStream
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -100,19 +113,48 @@ class PagerPhotoFragment : Fragment() {
                 val hasPermission = hasPermission(requireContext(), PERMISSIONS)
                 if (hasPermission) {
                     Log.d("PagerPhotoFragment","已经动态获取了权限")
+                    downloadImage()
                 } else {
                     permissionRequestLauncher.launch(PERMISSIONS)
                 }
             } else {
                 Log.d("photo view","系统API大于29")
-                val hasPermission = hasPermission(requireContext(), PERMISSIONS)
-                if (hasPermission) {
-                    Log.d("PagerPhotoFragment","已经动态获取了权限")
-                } else {
-                    permissionRequestLauncher.launch(PERMISSIONS)
-                }
+                downloadImage()
             }
         }
+    }
+
+    private fun downloadImage() {
+       val viewHolder = (binding.viewPager2[0] as RecyclerView).findViewHolderForAdapterPosition(binding.viewPager2.currentItem) as PagerPhotoViewHolder
+        val bitmap = viewHolder.itemView.findViewById<PhotoView>(R.id.pagerPhoto).drawable.toBitmap()
+        saveImage(requireContext(),bitmap)
+    }
+
+    @SuppressLint("Recycle")
+    fun saveImage(context: Context, image:Bitmap) {
+       try {
+           val values = ContentValues()
+           values.put(MediaStore.Images.Media.DISPLAY_NAME,"${System.currentTimeMillis()}.png")
+           values.put(MediaStore.Images.Media.MIME_TYPE,"image/png")
+           values.put(MediaStore.Images.Media.RELATIVE_PATH,Environment.DIRECTORY_PICTURES)
+           val saveRui = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,ContentValues())?:kotlin.run {
+               Toast.makeText(context,"保存失败uri",Toast.LENGTH_LONG).show()
+               return
+           }
+
+           context.contentResolver.openOutputStream(saveRui).use {
+               /// 图片比较大的时候要开一个子线程
+               val success = it?.let { it1 -> image.compress(Bitmap.CompressFormat.PNG,100, it1) }
+               if (success != null && success) {
+                   Toast.makeText(context,"保存成功",Toast.LENGTH_LONG).show()
+               } else {
+                   Toast.makeText(context,"保存失败compress",Toast.LENGTH_LONG).show()
+               }
+           }
+
+       } catch (e:Exception) {
+           Log.e(tag,"保存图片异常$e")
+       }
     }
 
     private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
@@ -121,6 +163,7 @@ class PagerPhotoFragment : Fragment() {
         }
         if (granted) {
             Log.d(tag,"权限全部允许")
+            downloadImage()
         } else {
             Toast.makeText(requireContext(),"请打开权限",Toast.LENGTH_LONG).show()
         }
