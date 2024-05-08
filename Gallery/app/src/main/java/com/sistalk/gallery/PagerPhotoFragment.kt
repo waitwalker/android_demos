@@ -28,7 +28,12 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.get
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import uk.co.senab.photoview.PhotoView
 import java.io.File
 import java.io.FileOutputStream
@@ -127,34 +132,47 @@ class PagerPhotoFragment : Fragment() {
     private fun downloadImage() {
        val viewHolder = (binding.viewPager2[0] as RecyclerView).findViewHolderForAdapterPosition(binding.viewPager2.currentItem) as PagerPhotoViewHolder
         val bitmap = viewHolder.itemView.findViewById<PhotoView>(R.id.pagerPhoto).drawable.toBitmap()
-        saveImage(requireContext(),bitmap)
+        // 开启协程 允许挂起
+        viewLifecycleOwner.lifecycleScope.launch {
+            saveImage(requireContext(),bitmap)
+        }
     }
 
     @SuppressLint("Recycle")
-    fun saveImage(context: Context, image:Bitmap) {
-       try {
-           val values = ContentValues()
-           values.put(MediaStore.Images.Media.DISPLAY_NAME,"${System.currentTimeMillis()}.png")
-           values.put(MediaStore.Images.Media.MIME_TYPE,"image/png")
-           values.put(MediaStore.Images.Media.RELATIVE_PATH,Environment.DIRECTORY_PICTURES)
-           val saveRui = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,ContentValues())?:kotlin.run {
-               Toast.makeText(context,"保存失败uri",Toast.LENGTH_LONG).show()
-               return
-           }
+    suspend fun saveImage(context: Context, image:Bitmap) {
+       // 开启一个子线程
+        withContext(Dispatchers.IO) {
+            try {
+                val values = ContentValues()
+                values.put(MediaStore.Images.Media.DISPLAY_NAME,"${System.currentTimeMillis()}.png")
+                values.put(MediaStore.Images.Media.MIME_TYPE,"image/png")
+//                values.put(MediaStore.Images.Media.RELATIVE_PATH,Environment.DIRECTORY_PICTURES)
+                val saveRui = context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values)?:kotlin.run {
+                    MainScope().launch {
+                        Toast.makeText(context,"保存失败uri",Toast.LENGTH_LONG).show()
+                    }
+                    return@withContext
+                }
 
-           context.contentResolver.openOutputStream(saveRui).use {
-               /// 图片比较大的时候要开一个子线程
-               val success = it?.let { it1 -> image.compress(Bitmap.CompressFormat.PNG,100, it1) }
-               if (success != null && success) {
-                   Toast.makeText(context,"保存成功",Toast.LENGTH_LONG).show()
-               } else {
-                   Toast.makeText(context,"保存失败compress",Toast.LENGTH_LONG).show()
-               }
-           }
+                context.contentResolver.openOutputStream(saveRui).use {
+                    /// 图片比较大的时候要开一个子线程
+                    val success = it?.let { it1 -> image.compress(Bitmap.CompressFormat.PNG,100, it1) }
+                    if (success != null && success) {
+                        // 回到主线程 处理UI
+                        MainScope().launch {
+                            Toast.makeText(context,"保存成功",Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        MainScope().launch {
+                            Toast.makeText(context,"保存失败compress",Toast.LENGTH_LONG).show()
+                        }
+                    }
+                }
 
-       } catch (e:Exception) {
-           Log.e(tag,"保存图片异常$e")
-       }
+            } catch (e:Exception) {
+                Log.e(tag,"保存图片异常$e")
+            }
+        }
     }
 
     private val permissionRequestLauncher = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
