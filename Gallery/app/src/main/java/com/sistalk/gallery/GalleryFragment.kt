@@ -108,6 +108,11 @@ class GalleryFragment : Fragment() {
         view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).setOnRefreshListener {
             viewModel.fetchData()
         }
+
+        // 滚动监听
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+
+        })
     }
 
     companion object {
