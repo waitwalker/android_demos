@@ -3,6 +3,7 @@ package com.sistalk.gallery
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.Menu
@@ -111,7 +112,23 @@ class GalleryFragment : Fragment() {
 
         // 滚动监听
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                Log.d(tag,"onScrollStateChanged=${newState}")
+            }
 
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                Log.d(tag,"滚动范围dy=$dy")
+                if (dy < 0) return
+                val layoutManager = recyclerView.layoutManager as StaggeredGridLayoutManager
+                val intArray = IntArray(2)
+                layoutManager.findLastVisibleItemPositions(intArray)
+                // 页脚出现
+                if (intArray[0] == galleryAdapter.itemCount - 1) {
+
+                }
+            }
         })
     }
 
