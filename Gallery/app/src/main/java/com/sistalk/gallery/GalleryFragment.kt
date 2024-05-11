@@ -53,7 +53,7 @@ class GalleryFragment : Fragment() {
                     R.id.swipeIndicator -> {
                         view?.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery)?.isRefreshing = true
                         Handler(Looper.getMainLooper()).postDelayed({
-                            viewModel.fetchData()
+                            viewModel.resetQuery()
                         }, 1000)
                     }
                 }
@@ -73,7 +73,7 @@ class GalleryFragment : Fragment() {
 //            R.id.swipeIndicator -> {
 //                view?.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery)?.isRefreshing = true
 //                Handler().postDelayed(Runnable {
-//                    viewModel.fetchData()
+//                    viewModel.resetQuery()
 //                }, 1000)
 //            }
 //        }
@@ -105,9 +105,9 @@ class GalleryFragment : Fragment() {
             galleryAdapter.submitList(it)
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         }
-        viewModel.photoListLive.value ?: viewModel.fetchData()
+//        viewModel.photoListLive.value ?: viewModel.resetQuery()
         view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).setOnRefreshListener {
-            viewModel.fetchData()
+            viewModel.resetQuery()
         }
 
         // 滚动监听
@@ -122,11 +122,11 @@ class GalleryFragment : Fragment() {
                 Log.d(tag,"滚动范围dy=$dy")
                 if (dy < 0) return
                 val layoutManager = recyclerView.layoutManager as StaggeredGridLayoutManager
-                val intArray = IntArray(2)
+                val intArray = IntArray(3)
                 layoutManager.findLastVisibleItemPositions(intArray)
                 // 页脚出现
                 if (intArray[0] == galleryAdapter.itemCount - 1) {
-
+                    viewModel.fetchData()
                 }
             }
         })

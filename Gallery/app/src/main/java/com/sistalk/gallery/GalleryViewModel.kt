@@ -9,6 +9,7 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
+import kotlin.math.ceil
 
 class GalleryViewModel(private val application: Application) : AndroidViewModel(application) {
     private var _photoListLive = MutableLiveData<List<PhotoItem>>()
@@ -23,12 +24,17 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
     private var currentKey = ""
     private var isNewQuery = true
     private var isLoading = false
-    private val perPage = 30
+    private val perPage = 20
+
+    init {
+        resetQuery()
+    }
 
     fun resetQuery() {
         currentPage = 1
         totalPage = 1
         currentKey = keyWords.random()
+        Log.d("GalleryViewModel","请求的key=$currentKey")
         isNewQuery = true
         fetchData()
     }
@@ -43,7 +49,7 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
             {
                 // with 操作，将
                 with(Gson().fromJson(it, Pixabay::class.java)) {
-                    totalPage = totalHits
+                    totalPage = ceil(totalHits.toDouble()/perPage).toInt()
                     if (isNewQuery) {
                         _photoListLive.value = hits.toList()
                     } else {
