@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.navigation.findNavController
+import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +21,7 @@ import com.bumptech.glide.request.target.Target
 import io.supercharge.shimmerlayout.ShimmerLayout
 
 
-class GalleryAdapter(val viewModel: GalleryViewModel) : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
+class GalleryAdapter(val viewModel: GalleryViewModel) : PagedListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
     var footViewStatus = DATA_STATUS_CAN_LOAD_MORE
 
     // 创建属于类的常量
@@ -47,11 +48,17 @@ class GalleryAdapter(val viewModel: GalleryViewModel) : ListAdapter<PhotoItem, M
             holder.itemView.setOnClickListener(View.OnClickListener {
                 val photoItem = getItem(holder.adapterPosition)
                 Bundle().apply {
-                    putString("fullURL", photoItem.fullURL)
-                    putInt("photoId", photoItem.photoId)
-                    putString("previewURL", photoItem.previewURL)
+                    if (photoItem != null) {
+                        putString("fullURL", photoItem.fullURL)
+                    }
+                    if (photoItem != null) {
+                        putInt("photoId", photoItem.photoId)
+                    }
+                    if (photoItem != null) {
+                        putString("previewURL", photoItem.previewURL)
+                    }
                     val list = ArrayList<String>()
-                    currentList.map {
+                    currentList?.map {
                         list.add(it.fullURL)
                     }
                     putStringArrayList("photos", list)
@@ -68,7 +75,8 @@ class GalleryAdapter(val viewModel: GalleryViewModel) : ListAdapter<PhotoItem, M
                     it.setOnClickListener{itemView->
                         itemView.findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
                         itemView.findViewById<TextView>(R.id.textView).text = "正在加载"
-                        viewModel.fetchData()
+//                        viewModel.fetchData()
+                        viewModel.resetQuery()
                     }
                 }
 
@@ -114,10 +122,10 @@ class GalleryAdapter(val viewModel: GalleryViewModel) : ListAdapter<PhotoItem, M
             startShimmerAnimation()
         }
         holder.itemView.findViewById<ImageView>(R.id.imageView).layoutParams.height =
-            getItem(position).photoHeight
-        holder.itemView.findViewById<TextView>(R.id.textViewUser).text = getItem(position).photoUser
+            getItem(position)!!.photoHeight
+        holder.itemView.findViewById<TextView>(R.id.textViewUser).text = getItem(position)!!.photoUser
         Glide.with(holder.itemView)
-            .load(getItem(position).previewURL)
+            .load(getItem(position)!!.previewURL)
             .placeholder(R.drawable.photo_placeholder)
             .listener(object : RequestListener<Drawable> {
                 override fun onLoadFailed(

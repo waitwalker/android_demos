@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -34,7 +35,8 @@ class GalleryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private lateinit var viewModel: GalleryViewModel
+//    private late init var viewModel: GalleryViewModel
+    private val viewModel by viewModels<GalleryViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +51,7 @@ class GalleryFragment : Fragment() {
                 menuInflater.inflate(R.menu.menu, menu)
             }
 
+            // 下拉刷新
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when (menuItem.itemId) {
                     R.id.swipeIndicator -> {
@@ -92,36 +95,41 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        setHasOptionsMenu(true)
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        )[GalleryViewModel::class.java]
+//        viewModel = ViewModelProvider(
+//            this,
+//            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+//        )[GalleryViewModel::class.java]
         val galleryAdapter = GalleryAdapter(viewModel)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
         recyclerView.apply {
             adapter = galleryAdapter
             layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
         }
-
-        viewModel.photoListLive.observe(viewLifecycleOwner) {
-            if (viewModel.needScrollToTop) {
-                recyclerView.scrollToPosition(0)
-                viewModel.needScrollToTop = false
-            }
+        viewModel.pagedListLiveData.observe(viewLifecycleOwner, Observer {
             galleryAdapter.submitList(it)
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
-        }
-
-        viewModel.dataStatusLiveData.observe(viewLifecycleOwner, Observer {
-            galleryAdapter.footViewStatus = it
-            galleryAdapter.notifyItemChanged(galleryAdapter.itemCount - 1)
-            if (it == DATA_STATUS_NETWORK_ERROR) {
-                view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
-            }
         })
+
+//        viewModel.photoListLive.observe(viewLifecycleOwner) {
+//            if (viewModel.needScrollToTop) {
+//                recyclerView.scrollToPosition(0)
+//                viewModel.needScrollToTop = false
+//            }
+//            galleryAdapter.submitList(it)
+//            view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
+//        }
+
+//        viewModel.dataStatusLiveData.observe(viewLifecycleOwner, Observer {
+//            galleryAdapter.footViewStatus = it
+//            galleryAdapter.notifyItemChanged(galleryAdapter.itemCount - 1)
+//            if (it == DATA_STATUS_NETWORK_ERROR) {
+//                view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
+//            }
+//        })
 
 //        viewModel.photoListLive.value ?: viewModel.resetQuery()
         view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).setOnRefreshListener {
+//            viewModel.resetQuery()
             viewModel.resetQuery()
         }
 
@@ -141,7 +149,7 @@ class GalleryFragment : Fragment() {
                 layoutManager.findLastVisibleItemPositions(intArray)
                 // 页脚出现
                 if (intArray[0] == galleryAdapter.itemCount - 1) {
-                    viewModel.fetchData()
+//                    viewModel.fetchData()
                 }
             }
         })
