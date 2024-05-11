@@ -11,7 +11,12 @@ import com.android.volley.toolbox.StringRequest
 import com.google.gson.Gson
 import kotlin.math.ceil
 
+const val DATA_STATUS_CAN_LOAD_MORE = 0
+const val DATA_STATUS_NO_MORE = 1
+const val DATA_STATUS_NETWORK_ERROR = 2
 class GalleryViewModel(private val application: Application) : AndroidViewModel(application) {
+    private val _dataStatusLive = MutableLiveData<Int>()
+    val dataStatusLiveData:LiveData<Int> get() = _dataStatusLive
     private var _photoListLive = MutableLiveData<List<PhotoItem>>()
     val photoListLive: LiveData<List<PhotoItem>> get() = _photoListLive
 
@@ -24,7 +29,7 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
     private var currentKey = ""
     private var isNewQuery = true
     private var isLoading = false
-    private val perPage = 20
+    private val perPage = 200
     var needScrollToTop = true
 
     init {
@@ -44,7 +49,10 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
     fun fetchData() {
         if (isLoading) return
         isLoading = true
-        if (currentPage > totalPage) return
+        if (currentPage > totalPage) {
+            _dataStatusLive.value = DATA_STATUS_NO_MORE
+            return
+        }
         val stringRequest = StringRequest(
             Request.Method.GET,
             getUrl(),
@@ -58,12 +66,14 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
                         _photoListLive.value = arrayListOf(_photoListLive.value!!,hits.toList()).flatten()
                     }
                 }
+                _dataStatusLive.value = DATA_STATUS_CAN_LOAD_MORE
                 isLoading = false
                 isNewQuery = false
                 currentPage++
             },
             {
                 isLoading = false
+                _dataStatusLive.value = DATA_STATUS_NETWORK_ERROR
                 Log.e("GalleryViewModel", "fetch data error=$it")
             }
         )

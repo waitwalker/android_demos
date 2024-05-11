@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -109,6 +110,15 @@ class GalleryFragment : Fragment() {
             galleryAdapter.submitList(it)
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         }
+
+        viewModel.dataStatusLiveData.observe(viewLifecycleOwner, Observer {
+            galleryAdapter.footViewStatus = it
+            galleryAdapter.notifyItemChanged(galleryAdapter.itemCount - 1)
+            if (it == DATA_STATUS_NETWORK_ERROR) {
+                view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
+            }
+        })
+
 //        viewModel.photoListLive.value ?: viewModel.resetQuery()
         view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).setOnRefreshListener {
             viewModel.resetQuery()

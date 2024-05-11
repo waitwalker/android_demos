@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
@@ -21,6 +22,8 @@ import io.supercharge.shimmerlayout.ShimmerLayout
 
 
 class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
+    var footViewStatus = DATA_STATUS_CAN_LOAD_MORE
+
     // 创建属于类的常量
     companion object {
         class Room {
@@ -79,6 +82,22 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         if (position == itemCount - 1) {
+            with(holder.itemView) {
+                when (footViewStatus) {
+                    DATA_STATUS_CAN_LOAD_MORE-> {
+                        findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
+                        findViewById<TextView>(R.id.textView).text = "正在加载"
+                    }
+                    DATA_STATUS_NO_MORE->{
+                        findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
+                        findViewById<TextView>(R.id.textView).text = "加载完毕"
+                    }
+                    DATA_STATUS_NETWORK_ERROR->{
+                        findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
+                        findViewById<TextView>(R.id.textView).text = "网络故障，稍后重试"
+                    }
+                }
+            }
             return
         }
         holder.itemView.findViewById<ShimmerLayout>(R.id.shimmerLayoutCell).apply {
