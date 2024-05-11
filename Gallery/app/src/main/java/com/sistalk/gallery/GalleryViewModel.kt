@@ -25,6 +25,7 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
     private var isNewQuery = true
     private var isLoading = false
     private val perPage = 20
+    var needScrollToTop = true
 
     init {
         resetQuery()
@@ -36,6 +37,7 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
         currentKey = keyWords.random()
         Log.d("GalleryViewModel","请求的key=$currentKey")
         isNewQuery = true
+        needScrollToTop = true
         fetchData()
     }
 

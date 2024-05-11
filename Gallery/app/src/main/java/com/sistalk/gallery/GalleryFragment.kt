@@ -102,6 +102,10 @@ class GalleryFragment : Fragment() {
             ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
         )[GalleryViewModel::class.java]
         viewModel.photoListLive.observe(viewLifecycleOwner) {
+            if (viewModel.needScrollToTop) {
+                recyclerView.scrollToPosition(0)
+                viewModel.needScrollToTop = false
+            }
             galleryAdapter.submitList(it)
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         }
