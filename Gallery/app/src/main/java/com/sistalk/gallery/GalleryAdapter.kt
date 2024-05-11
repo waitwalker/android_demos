@@ -1,5 +1,4 @@
 package com.sistalk.gallery
-
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -21,7 +20,7 @@ import com.bumptech.glide.request.target.Target
 import io.supercharge.shimmerlayout.ShimmerLayout
 
 
-class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
+class GalleryAdapter(val viewModel: GalleryViewModel) : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
     var footViewStatus = DATA_STATUS_CAN_LOAD_MORE
 
     // 创建属于类的常量
@@ -66,7 +65,13 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
             val view =
                 LayoutInflater.from(parent.context).inflate(R.layout.gallery_footer, parent, false).also {
                     (it.layoutParams as StaggeredGridLayoutManager.LayoutParams).isFullSpan = true
+                    it.setOnClickListener{itemView->
+                        itemView.findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
+                        itemView.findViewById<TextView>(R.id.textView).text = "正在加载"
+                        viewModel.fetchData()
+                    }
                 }
+
             holder = MyViewHolder(view)
         }
         return holder
@@ -87,14 +92,17 @@ class GalleryAdapter : ListAdapter<PhotoItem, MyViewHolder>(DIFFCALLBACK) {
                     DATA_STATUS_CAN_LOAD_MORE-> {
                         findViewById<ProgressBar>(R.id.progressBar).visibility = View.VISIBLE
                         findViewById<TextView>(R.id.textView).text = "正在加载"
+                        isClickable = false
                     }
                     DATA_STATUS_NO_MORE->{
                         findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
                         findViewById<TextView>(R.id.textView).text = "加载完毕"
+                        isClickable = false
                     }
                     DATA_STATUS_NETWORK_ERROR->{
                         findViewById<ProgressBar>(R.id.progressBar).visibility = View.GONE
-                        findViewById<TextView>(R.id.textView).text = "网络故障，稍后重试"
+                        findViewById<TextView>(R.id.textView).text = "网络故障，点击重试"
+                        isClickable = true
                     }
                 }
             }

@@ -92,16 +92,17 @@ class GalleryFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 //        setHasOptionsMenu(true)
-        val galleryAdapter = GalleryAdapter()
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
+        )[GalleryViewModel::class.java]
+        val galleryAdapter = GalleryAdapter(viewModel)
         val recyclerView = view.findViewById<RecyclerView>(R.id.recycleView)
         recyclerView.apply {
             adapter = galleryAdapter
             layoutManager = StaggeredGridLayoutManager(3,StaggeredGridLayoutManager.VERTICAL)
         }
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory(requireActivity().application)
-        )[GalleryViewModel::class.java]
+
         viewModel.photoListLive.observe(viewLifecycleOwner) {
             if (viewModel.needScrollToTop) {
                 recyclerView.scrollToPosition(0)
