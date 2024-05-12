@@ -33,12 +33,12 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
         callback: LoadInitialCallback<Int, PhotoItem>
     ) {
         _networkStatus.postValue(NetworkStatus.LOADING)
+        retry = null
         val url =
             "https://pixabay.com/api/?key=43526529-78fdad7ba06d5dbd4c64f7872&q=$queryKey&per_page=$50&page=1"
         StringRequest(
             Request.Method.GET, url,
             {
-                retry = null
                 val dataList: List<PhotoItem> =
                     Gson().fromJson(it, Pixabay::class.java).hits.toList()
                 callback.onResult(dataList, null, nextPageKey = 2)
@@ -56,20 +56,24 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
 
     // 下一页
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, PhotoItem>) {
+        retry = null
         val url =
             "https://pixabay.com/api/?key=43526529-78fdad7ba06d5dbd4c64f7872&q=$queryKey&per_page=$50&page=${params.key}"
         StringRequest(
             Request.Method.GET, url,
             {
-                retry = null
                 val dataList: List<PhotoItem> =
                     Gson().fromJson(it, Pixabay::class.java).hits.toList()
                 callback.onResult(dataList, params.key+1)
             },
             {
                 Log.e("dataSource", "loadInitial:$it")
-                _networkStatus.postValue(NetworkStatus.FAILED)
-                retry = {loadAfter(params,callback)}
+                if (it.toString() == "com.android.volley.ClientError") {
+                    _networkStatus.postValue(NetworkStatus.COMPLETED)
+                } else {
+                    _networkStatus.postValue(NetworkStatus.FAILED)
+                    retry = {loadAfter(params,callback)}
+                }
             },
         ).also {
             VolleySingleton.instance(context).requestQueue.add(it)

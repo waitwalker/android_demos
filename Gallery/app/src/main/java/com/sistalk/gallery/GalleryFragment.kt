@@ -113,9 +113,10 @@ class GalleryFragment : Fragment() {
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         })
 
-        viewModel.networkStatus?.observe(viewLifecycleOwner, Observer {
-            Log.e(tag,"加载状态=$it")
-        })
+        viewModel.networkStatus?.observe(viewLifecycleOwner) {
+            Log.e(tag, "加载状态=$it")
+            galleryAdapter.updateNetworkStatus(it)
+        }
 
 //        viewModel.photoListLive.observe(viewLifecycleOwner) {
 //            if (viewModel.needScrollToTop) {
