@@ -127,6 +127,7 @@ class PagerPhotoFragment : Fragment() {
                 downloadImage()
             }
         }
+
     }
 
     private fun downloadImage() {

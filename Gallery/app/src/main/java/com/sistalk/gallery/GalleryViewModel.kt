@@ -1,15 +1,11 @@
 package com.sistalk.gallery
 
 import android.app.Application
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import androidx.paging.toLiveData
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.google.gson.Gson
-import kotlin.math.ceil
 
 const val DATA_STATUS_CAN_LOAD_MORE = 0
 const val DATA_STATUS_NO_MORE = 1
@@ -84,9 +80,18 @@ class GalleryViewModel(private val application: Application) : AndroidViewModel(
 //        return "https://pixabay.com/api/?key=43526529-78fdad7ba06d5dbd4c64f7872&q=$currentKey&per_page=$perPage&page=$currentPage"
 //    }
 
-    val pagedListLiveData= PixabayDataSourceFactory(application).toLiveData(pageSize = 1)
+    private val factory = PixabayDataSourceFactory(application)
+    val pagedListLiveData= factory.toLiveData(pageSize = 1)
+    val networkStatus = factory.pixabayDataSource.value?.networkStatus?.switchMap {
+        MutableLiveData<NetworkStatus>(it)
+    }
     fun resetQuery() {
         pagedListLiveData.value?.dataSource?.invalidate()
+    }
+
+    fun retryQuery() {
+        // 调用方法
+        factory.pixabayDataSource.value?.retry?.invoke()
     }
 
 }

@@ -60,6 +60,9 @@ class GalleryFragment : Fragment() {
                             viewModel.resetQuery()
                         }, 1000)
                     }
+                    R.id.menuRetry ->{
+                        viewModel.retryQuery()
+                    }
                 }
                 return false
             }
@@ -110,6 +113,10 @@ class GalleryFragment : Fragment() {
             view.findViewById<SwipeRefreshLayout>(R.id.swipeLayoutGallery).isRefreshing = false
         })
 
+        viewModel.networkStatus?.observe(viewLifecycleOwner, Observer {
+            Log.e(tag,"加载状态=$it")
+        })
+
 //        viewModel.photoListLive.observe(viewLifecycleOwner) {
 //            if (viewModel.needScrollToTop) {
 //                recyclerView.scrollToPosition(0)
@@ -133,6 +140,7 @@ class GalleryFragment : Fragment() {
             viewModel.resetQuery()
         }
 
+
         // 滚动监听
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener(){
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -153,6 +161,7 @@ class GalleryFragment : Fragment() {
                 }
             }
         })
+
     }
 
     companion object {

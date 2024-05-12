@@ -22,6 +22,8 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
     private val _networkStatus = MutableLiveData<NetworkStatus>()
     val networkStatus:LiveData<NetworkStatus> get() = _networkStatus
 
+    var retry:(()->Any)? = null
+
     private val queryKey =
         arrayOf("cat", "dog", "car", "beauty", "phone", "computer", "flowers", "animal").random()
 
@@ -36,6 +38,7 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
         StringRequest(
             Request.Method.GET, url,
             {
+                retry = null
                 val dataList: List<PhotoItem> =
                     Gson().fromJson(it, Pixabay::class.java).hits.toList()
                 callback.onResult(dataList, null, nextPageKey = 2)
@@ -43,6 +46,7 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
             {
                 Log.e("dataSource", "loadInitial:$it")
                 _networkStatus.postValue(NetworkStatus.FAILED)
+                retry = {loadInitial(params,callback)}
             },
         ).also {
             VolleySingleton.instance(context).requestQueue.add(it)
@@ -57,6 +61,7 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
         StringRequest(
             Request.Method.GET, url,
             {
+                retry = null
                 val dataList: List<PhotoItem> =
                     Gson().fromJson(it, Pixabay::class.java).hits.toList()
                 callback.onResult(dataList, params.key+1)
@@ -64,6 +69,7 @@ class PixabayDataSource(private val context: Context) : PageKeyedDataSource<Int,
             {
                 Log.e("dataSource", "loadInitial:$it")
                 _networkStatus.postValue(NetworkStatus.FAILED)
+                retry = {loadAfter(params,callback)}
             },
         ).also {
             VolleySingleton.instance(context).requestQueue.add(it)
