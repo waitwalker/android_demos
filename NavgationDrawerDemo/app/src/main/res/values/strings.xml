@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NavgationDrawerDemo</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_fragment_title">Text</string>
+    <string name="list_fragment_title">List</string>
+    <string name="pager_fragment_title">Pager</string>
 </resources>
