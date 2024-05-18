@@ -6,4 +6,5 @@
     <string name="list_fragment_title">List</string>
     <string name="pager_fragment_title">Pager</string>
     <string name="navigation_view_header_title">Drawer Header</string>
+    <string name="placeholder_text">In kotlin when I try to (getActivity() as AppCompatActivity?)!!.setSupportActionBar inside a fragment passing the inflated toolbar as parameter for the setSupportActionBar it crashes and the error message is "AppBarLayout cannot be cast to android.widget.Toolbar" any thoughts on how to solve this issue? – aguiarroney Feb 15, 2022 at 12:51</string>
 </resources>

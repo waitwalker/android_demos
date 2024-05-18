@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import com.google.android.material.appbar.CollapsingToolbarLayout
 
 // TODO: Rename parameter arguments, choose names that match
@@ -35,6 +36,7 @@ class ListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         requireActivity().findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar).title = getString(R.string.list_fragment_title)
+        requireActivity().findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar).findViewById<ImageView>(R.id.toolbarIconImageView).setImageResource(R.drawable.baseline_2k_24)
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_list, container, false)
     }
