@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.appbar.CollapsingToolbarLayout
+import com.sistalk.navgationdrawerdemo.databinding.FragmentTextBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +22,7 @@ class TextFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    lateinit var binding: FragmentTextBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +37,10 @@ class TextFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_text, container, false)
+        binding = FragmentTextBinding.inflate(inflater)
+        requireActivity().findViewById<CollapsingToolbarLayout>(R.id.collapsingToolbar).title = getString(R.string.text_fragment_title)
+        return binding.root
+//        return inflater.inflate(R.layout.fragment_text, container, false)
     }
 
     companion object {

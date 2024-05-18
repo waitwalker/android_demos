@@ -35,7 +35,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        navController = findNavController(binding.fragment.id)
+        setSupportActionBar(findViewById(R.id.toolbar))
+        navController = findNavController(R.id.fragment)
 //        appBarConfiguration = AppBarConfiguration(navController.graph, binding.drawerLayout)
         val set:Set<Int> = setOf(R.id.textFragment,R.id.listFragment,R.id.pagerFragment)
         appBarConfiguration = AppBarConfiguration(set,binding.drawerLayout)
