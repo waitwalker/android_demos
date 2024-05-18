@@ -5,4 +5,5 @@
     <string name="text_fragment_title">Text</string>
     <string name="list_fragment_title">List</string>
     <string name="pager_fragment_title">Pager</string>
+    <string name="navigation_view_header_title">Drawer Header</string>
 </resources>
