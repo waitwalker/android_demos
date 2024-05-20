@@ -16,9 +16,9 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         mainBinding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(mainBinding.root)
-        val set = mainBinding.motionLayout.getConstraintSet(R.id.end)
-        set.setRotation(R.id.view,9000f)
-        mainBinding.motionLayout.updateState(R.id.end,set)
+//        val set = mainBinding.motionLayout.getConstraintSet(R.id.end)
+//        set.setRotation(R.id.view,9000f)
+//        mainBinding.motionLayout.updateState(R.id.end,set)
         // setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.motionLayout)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
