@@ -14,15 +14,15 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_message_stroke"
-        app:altSrc="@drawable/baseline_message_fill"
+        app:srcCompat="@drawable/baseline_account_circle_stroke"
+        app:altSrc="@drawable/baseline_account_circle_fill"
         />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/message_icon_title"
+        android:text="@string/account_icon_title"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
