@@ -40,7 +40,21 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.exploreFragment)
         }
         findViewById<MotionLayout>(R.id.accountMotionLayout).setOnClickListener{
-            navController.navigate(R.id.exploreFragment)
+            navController.navigate(R.id.accountFragment)
+        }
+
+        navController.addOnDestinationChangedListener {controller,destination,arguments->
+            findViewById<MotionLayout>(R.id.messageMotionLayout).progress = 0.01f
+            findViewById<MotionLayout>(R.id.contactMotionLayout).progress = 0.01f
+            findViewById<MotionLayout>(R.id.exploreMotionLayout).progress = 0.01f
+            findViewById<MotionLayout>(R.id.accountMotionLayout).progress = 0.01f
+
+            when (destination.id) {
+                R.id.messageFragment -> findViewById<MotionLayout>(R.id.messageMotionLayout).transitionToEnd()
+                R.id.contactFragment -> findViewById<MotionLayout>(R.id.contactMotionLayout).transitionToEnd()
+                R.id.exploreFragment -> findViewById<MotionLayout>(R.id.exploreMotionLayout).transitionToEnd()
+                R.id.accountFragment -> findViewById<MotionLayout>(R.id.accountMotionLayout).transitionToEnd()
+            }
         }
     }
 }
