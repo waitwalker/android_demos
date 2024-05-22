@@ -44,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         navController.addOnDestinationChangedListener {controller,destination,arguments->
+            // 清空返回栈
+            controller.popBackStack()
             findViewById<MotionLayout>(R.id.messageMotionLayout).progress = 0.01f
             findViewById<MotionLayout>(R.id.contactMotionLayout).progress = 0.01f
             findViewById<MotionLayout>(R.id.exploreMotionLayout).progress = 0.01f
