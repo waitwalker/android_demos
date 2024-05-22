@@ -15,7 +15,6 @@
                 android:translationX="5dp"
                 motion:waveOffset="0dp" />
         </KeyFrameSet>
-        <OnClick/>
     </Transition>
 
     <ConstraintSet android:id="@+id/start">
