@@ -26,7 +26,7 @@
             motion:layout_constraintHorizontal_bias="0.498"
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintStart_toStartOf="parent"
-            android:layout_marginTop="188dp" >
+            android:layout_marginTop="0dp" >
             <CustomAttribute
                 motion:attributeName="crossfade"
                 motion:customFloatValue="0" />
