@@ -1,6 +1,8 @@
 package com.sistalk.mediaplayerdemo
 
+import android.media.PlaybackParams
 import android.os.Bundle
+import android.widget.MediaController
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -18,7 +20,24 @@ class MainActivity : AppCompatActivity() {
 
         val videoPath = "android.resource://$packageName/${R.raw.a1}"
         mainBinding.videoView.setVideoPath(videoPath)
-        mainBinding.videoView.start()
+        mainBinding.videoView.setMediaController(MediaController(this))
+        // 缓冲监听
+        mainBinding.videoView.setOnPreparedListener {
+            it.seekTo(3000)
+            it.isLooping = true
+            it.playbackParams = PlaybackParams().apply {
+                //speed = 2.0f //倍速
+                pitch = 2.0f // 音高
+            }
+            it.start()
+        }
+        //mainBinding.videoView.start()
+
+        // 播放完成监听
+        mainBinding.videoView.setOnCompletionListener {
+
+        }
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
