@@ -2,6 +2,7 @@ package com.sistalk.mediaplayerdemo
 
 import android.media.PlaybackParams
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.MediaController
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mainBinding: ActivityMainBinding
+    private val tag:String = "MainActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         mainBinding.videoView.setMediaController(MediaController(this))
         // 缓冲监听
         mainBinding.videoView.setOnPreparedListener {
-
+            Log.d(tag,"media player id=$it")
             mainBinding.progressBar2.visibility = View.INVISIBLE
             mainBinding.progressBar.max = it.duration
             it.seekTo(3000)
