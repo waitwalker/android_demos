@@ -17,7 +17,9 @@ class PlayerViewModel:ViewModel() {
     fun loadVideo() {
         mediaPlayer.apply {
             _progressBarVisibility.value = View.VISIBLE
+            // 设置源
             setDataSource("https://www.youtube.com/watch?v=rDvxlZcpcI4")
+            // 准备监听
             setOnPreparedListener{
                 _progressBarVisibility.value = View.INVISIBLE
                 isLooping = true
