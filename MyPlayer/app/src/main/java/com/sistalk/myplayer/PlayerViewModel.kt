@@ -9,7 +9,18 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+enum class PlayerStatus {
+    Playing,
+    Paused,
+    Completed,
+    NotReady
+}
+
 class PlayerViewModel:ViewModel() {
+    private val _playerStatus = MutableLiveData(PlayerStatus.NotReady)
+    val playerStatus:LiveData<PlayerStatus> = _playerStatus
+
+
     private var controllerDisplayShowTime = 0L
     val mediaPlayer = MyMediaPlayer()
     private val _controllerFrameVisibility = MutableLiveData(View.INVISIBLE)
@@ -27,16 +38,18 @@ class PlayerViewModel:ViewModel() {
         loadVideo()
     }
 
-    fun loadVideo() {
+    private fun loadVideo() {
         mediaPlayer.apply {
             _progressBarVisibility.value = View.VISIBLE
+            _playerStatus.value = PlayerStatus.NotReady
             // 设置源
             setDataSource("https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4\n")
             // 准备监听
             setOnPreparedListener{
                 _progressBarVisibility.value = View.INVISIBLE
-                isLooping = true
+                //isLooping = true
                 it.start()
+                _playerStatus.value = PlayerStatus.Playing
             }
 
             setOnVideoSizeChangedListener { _, width, height ->
@@ -50,6 +63,10 @@ class PlayerViewModel:ViewModel() {
             setOnSeekCompleteListener {
                 mediaPlayer.start()
                 _progressBarVisibility.value = View.INVISIBLE
+            }
+
+            setOnSeekCompleteListener {
+                _playerStatus.value = PlayerStatus.Completed
             }
 
             prepareAsync()
@@ -73,6 +90,25 @@ class PlayerViewModel:ViewModel() {
             }
         } else {
             _controllerFrameVisibility.value = View.INVISIBLE
+        }
+    }
+
+    fun togglePlayerStatus() {
+        when(_playerStatus.value) {
+            PlayerStatus.Playing -> {
+                mediaPlayer.pause()
+                _playerStatus.value = PlayerStatus.Paused
+            }
+            PlayerStatus.Paused -> {
+                mediaPlayer.start()
+            _playerStatus.value = PlayerStatus.Playing
+            }
+            PlayerStatus.Completed->{
+                mediaPlayer.start()
+                _playerStatus.value = PlayerStatus.Playing
+            } else -> {
+                return
+            }
         }
     }
 

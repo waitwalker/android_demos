@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.SurfaceHolder
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -52,8 +53,21 @@ class MainActivity : AppCompatActivity() {
             bufferPercent.observe(this@MainActivity, Observer {
                 findViewById<SeekBar>(R.id.seekBar).secondaryProgress = findViewById<SeekBar>(R.id.seekBar).max * it / 100
             })
+
+            playerStatus.observe(this@MainActivity, Observer {
+                findViewById<ImageView>(R.id.controllerButton).isClickable = true
+                when(it) {
+                    PlayerStatus.Paused->findViewById<ImageView>(R.id.controllerButton).setImageResource(R.drawable.baseline_airplay_24)
+                    PlayerStatus.Completed->findViewById<ImageView>(R.id.controllerButton).setImageResource(R.drawable.baseline_autorenew_24)
+                    PlayerStatus.NotReady->findViewById<ImageView>(R.id.controllerButton).isClickable = false
+                    else -> findViewById<ImageView>(R.id.controllerButton).setImageResource(R.drawable.baseline_first_page_24)
+                }
+            })
         }
         lifecycle.addObserver(playerViewModel!!.mediaPlayer)
+        findViewById<ImageView>(R.id.controllerButton).setOnClickListener {
+            playerViewModel?.togglePlayerStatus()
+        }
 
         mainBinding.playerFrame.setOnClickListener {
             playerViewModel?.toggleControllerVisibility()
