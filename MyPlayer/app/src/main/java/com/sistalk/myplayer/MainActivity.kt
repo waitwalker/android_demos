@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.SurfaceHolder
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.SeekBar
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -14,7 +15,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.sistalk.myplayer.databinding.ActivityMainBinding
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
 
@@ -23,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        updatePlayerProgress()
         //setContentView(R.layout.activity_main)
         mainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 //        playerViewModel = mainBinding.data
@@ -34,6 +39,7 @@ class MainActivity : AppCompatActivity() {
             })
 
             videoResolution.observe(this@MainActivity, Observer {
+                findViewById<SeekBar>(R.id.seekBar).max = mediaPlayer.duration
                 mainBinding.playerFrame.post {
                     resizePlayer(it.first, it.second)
                 }
@@ -41,6 +47,10 @@ class MainActivity : AppCompatActivity() {
 
             controllerFrameVisibility.observe(this@MainActivity, Observer {
                 findViewById<FrameLayout>(R.id.controllerFrame).visibility = it
+            })
+
+            bufferPercent.observe(this@MainActivity, Observer {
+                findViewById<SeekBar>(R.id.seekBar).secondaryProgress = findViewById<SeekBar>(R.id.seekBar).max * it / 100
             })
         }
         lifecycle.addObserver(playerViewModel!!.mediaPlayer)
@@ -53,6 +63,22 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        findViewById<SeekBar>(R.id.seekBar).setOnSeekBarChangeListener(object :SeekBar.OnSeekBarChangeListener{
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                if (fromUser) {
+                    playerViewModel?.playerSeekToProgress(progress)
+                }
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+
+            }
+        })
 
         /// 通过回调监听surfaceView
         mainBinding.surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
@@ -93,6 +119,19 @@ class MainActivity : AppCompatActivity() {
             Log.d("main", "切换到横屏")
             hideSystemUI()
             playerViewModel?.emmitVideoResolution()
+        }
+    }
+
+    private fun updatePlayerProgress() {
+        // 协程里面处理
+        lifecycleScope.launch {
+            while (true) {
+                delay(500)
+                playerViewModel?.mediaPlayer?.currentPosition.also {
+                    if (it == null) return@launch
+                    findViewById<SeekBar>(R.id.seekBar).progress = it
+                }
+            }
         }
     }
 

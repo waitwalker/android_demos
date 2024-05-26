@@ -20,6 +20,9 @@ class PlayerViewModel:ViewModel() {
     private val _videoResolution = MutableLiveData(Pair(0,0))
     val videoResolution:LiveData<Pair<Int,Int>> = _videoResolution
 
+    private val _bufferPercent = MutableLiveData(0)
+    val bufferPercent:LiveData<Int> = _bufferPercent
+
     init {
         loadVideo()
     }
@@ -39,8 +42,23 @@ class PlayerViewModel:ViewModel() {
             setOnVideoSizeChangedListener { _, width, height ->
                 _videoResolution.value = Pair(width,height)
             }
+
+            setOnBufferingUpdateListener { mp, percent ->
+                _bufferPercent.value = percent
+            }
+
+            setOnSeekCompleteListener {
+                mediaPlayer.start()
+                _progressBarVisibility.value = View.INVISIBLE
+            }
+
             prepareAsync()
         }
+    }
+
+    fun playerSeekToProgress(progress:Int) {
+        _progressBarVisibility.value = View.VISIBLE
+        mediaPlayer.seekTo(progress)
     }
 
     fun toggleControllerVisibility() {
