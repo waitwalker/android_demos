@@ -5,9 +5,15 @@ import android.view.View
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class PlayerViewModel:ViewModel() {
+    private var controllerDisplayShowTime = 0L
     val mediaPlayer = MyMediaPlayer()
+    private val _controllerFrameVisibility = MutableLiveData(View.INVISIBLE)
+    val controllerFrameVisibility:LiveData<Int> = _controllerFrameVisibility
 
     private val _progressBarVisibility = MutableLiveData(View.VISIBLE)
     val progressBarVisibility:LiveData<Int> = _progressBarVisibility
@@ -34,6 +40,21 @@ class PlayerViewModel:ViewModel() {
                 _videoResolution.value = Pair(width,height)
             }
             prepareAsync()
+        }
+    }
+
+    fun toggleControllerVisibility() {
+        if (_controllerFrameVisibility.value == View.INVISIBLE) {
+            _controllerFrameVisibility.value = View.VISIBLE
+            controllerDisplayShowTime = System.currentTimeMillis()
+            viewModelScope.launch {
+                delay(3000)
+                if (System.currentTimeMillis() - controllerDisplayShowTime > 3000) {
+                    _controllerFrameVisibility.value = View.INVISIBLE
+                }
+            }
+        } else {
+            _controllerFrameVisibility.value = View.INVISIBLE
         }
     }
 

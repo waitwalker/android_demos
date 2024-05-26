@@ -38,10 +38,16 @@ class MainActivity : AppCompatActivity() {
                     resizePlayer(it.first, it.second)
                 }
             })
+
+            controllerFrameVisibility.observe(this@MainActivity, Observer {
+                findViewById<FrameLayout>(R.id.controllerFrame).visibility = it
+            })
         }
         lifecycle.addObserver(playerViewModel!!.mediaPlayer)
 
-
+        mainBinding.playerFrame.setOnClickListener {
+            playerViewModel?.toggleControllerVisibility()
+        }
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
