@@ -86,12 +86,13 @@ class MainActivity : AppCompatActivity() {
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             Log.d("main", "切换到横屏")
             hideSystemUI()
+            playerViewModel?.emmitVideoResolution()
         }
     }
 
     fun hideSystemUI() {
         window.decorView.systemUiVisibility =
-            (View.SYSTEM_UI_FLAG_IMMERSIVE
+            (View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                     or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                     or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
                     or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN

@@ -37,6 +37,10 @@ class PlayerViewModel:ViewModel() {
         }
     }
 
+    fun emmitVideoResolution() {
+        _videoResolution.value = _videoResolution.value;
+    }
+
     // 释放资源
     override fun onCleared() {
         super.onCleared()
