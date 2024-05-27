@@ -10,9 +10,9 @@ import com.sistalk.videopager.databinding.FragmentVideoBinding
 
 
 private val videoURLs:List<String> = listOf<String>(
-    "",
-    "",
-    ""
+    "https://media.w3.org/2010/05/sintel/trailer.mp4",
+    "https://sf1-cdn-tos.huoshanstatic.com/obj/media-fe/xgplayer_doc_video/mp4/xgplayer-demo-360p.mp4",
+    "https://www.w3schools.com/html/movie.mp4"
 )
 
 // TODO: Rename parameter arguments, choose names that match
