@@ -63,6 +63,8 @@ class VideoFragment : Fragment() {
                 }
 
             }
+            // 预加载
+            offscreenPageLimit = 2
         }
     }
 

@@ -36,7 +36,9 @@ class PlayerFragment(private val url:String) : Fragment() {
         mediaPlayer.apply {
             setOnPreparedListener {
                 binding.progressBarH.max = mediaPlayer.duration
-                it.start()
+                // 有预加载后不能直接播放，因为会出现好几个连续播放
+                //it.start()
+                seekTo(1)
                 binding.progressBar.visibility = View.INVISIBLE
             }
             setDataSource(url)
@@ -76,6 +78,13 @@ class PlayerFragment(private val url:String) : Fragment() {
     override fun onResume() {
         super.onResume()
         mediaPlayer.start()
+        lifecycleScope.launch {
+            // 守护进程
+            while (!mediaPlayer.isPlaying) {
+                mediaPlayer.start()
+                delay(500)
+            }
+        }
     }
 
     override fun onPause() {
