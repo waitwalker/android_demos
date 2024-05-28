@@ -1,16 +1,21 @@
 package com.sistalk.foregroundservice
 
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
 import com.sistalk.foregroundservice.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    lateinit var mainBinding: ActivityMainBinding
+    private lateinit var mainBinding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,9 +28,24 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        val serviceConnection = object :ServiceConnection{
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                (service as MyService.MyBinder).getService.numberLive.observe(this@MainActivity,
+                    Observer {
+                        mainBinding.textView.text = "$it"
+                    })
+            }
+
+            override fun onServiceDisconnected(name: ComponentName?) {
+
+            }
+
+        }
+
         // 启动Service
         Intent(this,MyService::class.java).apply {
             startService(this)
+            bindService(this, serviceConnection,Context.BIND_ALLOW_ACTIVITY_STARTS)
         }
     }
 }

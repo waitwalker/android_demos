@@ -5,11 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Intent
+import android.os.Binder
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,6 +19,9 @@ import kotlinx.coroutines.launch
 const val CHANNEL_ID = "my notification channel ID"
 
 class MyService : LifecycleService() {
+
+    val numberLive = MutableLiveData(0)
+
 
     private var number = 0
 
@@ -26,7 +31,8 @@ class MyService : LifecycleService() {
         lifecycleScope.launch {
             while (true) {
                 delay(1000)
-                Log.d("Hello", "onCreate:${number++}")
+//                Log.d("Hello", "onCreate:${number++}")
+                numberLive.value = numberLive.value?.plus(1)
             }
         }
 
@@ -59,8 +65,13 @@ class MyService : LifecycleService() {
         }
     }
 
+    // 内部Binder类
+    inner class MyBinder:Binder() {
+        val getService:MyService = this@MyService
+    }
+
     override fun onBind(intent: Intent): IBinder {
         super.onBind(intent)
-        TODO("Return the communication channel to the service.")
+        return MyBinder()
     }
 }
