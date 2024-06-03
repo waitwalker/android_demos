@@ -1,6 +1,7 @@
 package com.sistalk.appa
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -34,6 +35,16 @@ class MainActivity : AppCompatActivity() {
                 startActivity(mIntent)
             } else {
                 Toast.makeText(this,"App 没有安装，不能处理跳转", Toast.LENGTH_LONG).show()
+            }
+        }
+
+        mainBinding.button2.setOnClickListener {
+            val mIntent = Intent()
+            mIntent.component = ComponentName("com.sistalk.appb","com.sistalk.appb.SecondActivity")
+            if (mIntent.resolveActivity(packageManager) != null) {
+                startActivity(mIntent);
+            } else {
+                Toast.makeText(this, "App B is not installed.", Toast.LENGTH_LONG).show();
             }
         }
     }
