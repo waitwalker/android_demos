@@ -2,19 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    添加权限-->
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="https" android:host="waitwalker.cn" />
-        </intent>
-    </queries>
-    <queries>
-        <!-- 声明可见的应用包名 -->
-        <package android:name="com.sistalk.appc" />
-    </queries>
-
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -23,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppA"
+        android:theme="@style/Theme.AppD"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -33,6 +20,7 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
     </application>
 

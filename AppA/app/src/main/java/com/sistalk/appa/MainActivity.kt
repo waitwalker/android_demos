@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        // 通过package manager 方式已经过期，涉及到隐私权限
+        // 通过package manager 涉及到隐私权限
         mainBinding.buttonPackage.setOnClickListener {
             val packageName = "com.sistalk.appc"
             if (isAppInstalled(packageName)) {
@@ -64,8 +64,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this,"$packageName 没有安装",Toast.LENGTH_LONG).show()
             }
-
-
         }
     }
 
