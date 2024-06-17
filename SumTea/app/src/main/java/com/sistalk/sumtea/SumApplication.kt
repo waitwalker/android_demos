@@ -1,8 +1,11 @@
 package com.sistalk.sumtea
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
 import androidx.multidex.MultiDex
+import com.sistalk.lib_framework.manager.AppFrontBack
+import com.sistalk.lib_framework.manager.AppFrontBackListener
 
 
 class SumApplication:Application() {
@@ -25,7 +28,16 @@ class SumApplication:Application() {
     * 注册APP前后台切换监听
     * */
     private fun appFrontBackRegister() {
+        AppFrontBack.register(this, object : AppFrontBackListener {
+            override fun onFront(activity: Activity?) {
+                TODO("Not yet implemented")
+            }
 
+            override fun onBack(activity: Activity?) {
+                TODO("Not yet implemented")
+            }
+
+        })
     }
 }
 

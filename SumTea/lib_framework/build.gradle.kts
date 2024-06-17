@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.sistalk.sumtea"
+    namespace = "com.sistalk.lib_framework"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.sistalk.sumtea"
+        applicationId = "com.sistalk.lib_framework"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
@@ -37,16 +37,10 @@ android {
 
 dependencies {
 
-    implementation(libs.androidx.multidex)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.constraintlayout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
-
-    // 导入模块
-    implementation(project(":lib_framework"))
 }

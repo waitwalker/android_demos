@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "SumTea"
 include(":app")
+include(":lib_framework")
