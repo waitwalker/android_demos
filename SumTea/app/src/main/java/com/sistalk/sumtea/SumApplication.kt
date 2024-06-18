@@ -30,11 +30,11 @@ class SumApplication:Application() {
     private fun appFrontBackRegister() {
         AppFrontBack.register(this, object : AppFrontBackListener {
             override fun onFront(activity: Activity?) {
-                TODO("Not yet implemented")
+
             }
 
             override fun onBack(activity: Activity?) {
-                TODO("Not yet implemented")
+
             }
 
         })
