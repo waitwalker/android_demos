@@ -19,8 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-apply(from = "$rootDir/config.gradle.kts")
-
 rootProject.name = "SumTea"
 include(":app")
 include(":lib_framework")
