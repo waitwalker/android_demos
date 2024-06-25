@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import androidx.multidex.MultiDex
 import com.sistalk.framework.log.LogUtil
+import com.sistalk.framework.manager.ActivityManager
 import com.sistalk.framework.manager.AppFrontBack
 import com.sistalk.framework.manager.AppFrontBackListener
 
@@ -23,6 +24,8 @@ class SumApplication:Application() {
         super.onCreate()
 
         appFrontBackRegister()
+
+        registerActivityLifecycle()
     }
 
 
@@ -46,7 +49,7 @@ class SumApplication:Application() {
     private fun registerActivityLifecycle() {
         registerActivityLifecycleCallbacks(object :ActivityLifecycleCallbacks{
             override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {
-
+                ActivityManager.push(activity)
             }
 
             override fun onActivityStarted(activity: Activity) {
@@ -70,7 +73,7 @@ class SumApplication:Application() {
             }
 
             override fun onActivityDestroyed(activity: Activity) {
-
+                ActivityManager.pop(activity)
             }
         })
     }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">SumTea_AndroidX</string>
+    <string name="main_send">MainSend</string>
 </resources>
