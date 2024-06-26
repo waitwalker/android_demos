@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "SumTea_AndroidX"
 include(":app")
 include(":lib_framework")
+include(":lib_starter")
