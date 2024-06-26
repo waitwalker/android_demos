@@ -2,6 +2,7 @@
 
 package com.sistalk.framework.toast
 
+import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Context
 import android.os.Handler
@@ -12,10 +13,12 @@ import android.view.LayoutInflater
 import android.widget.Toast
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import com.sistalk.framework.R
 import com.sistalk.framework.databinding.WidgetTipsToastBinding
 import com.sistalk.framework.log.LogUtil
 
-class TipsToast {
+@SuppressLint("StaticFieldLeak")
+object TipsToast {
 
     private var toast: Toast? = null
     private lateinit var mContext: Context
@@ -46,6 +49,23 @@ class TipsToast {
         showTipsImpl(msg,duration)
     }
 
+    fun showSuccessTips(msg: String?) {
+        showTipsImpl(msg,Toast.LENGTH_SHORT, R.drawable.widget_toast_success)
+    }
+
+    fun showSuccessTips(@StringRes stringID: Int) {
+        val msg = mContext.getString(stringID)
+        showTipsImpl(msg,Toast.LENGTH_SHORT,R.drawable.widget_toast_success)
+    }
+
+    fun showWarningTips(msg: String?) {
+        showTipsImpl(msg,Toast.LENGTH_SHORT, R.drawable.widget_toast_warning)
+    }
+
+    fun showWarningTips(@StringRes stringID: Int) {
+        val msg = mContext.getString(stringID)
+        showTipsImpl(msg,Toast.LENGTH_SHORT,R.drawable.widget_toast_warning)
+    }
 
     private fun showTipsImpl(msg: String?, duration: Int, @DrawableRes drawableID: Int = 0) {
         if (msg.isNullOrEmpty()) {

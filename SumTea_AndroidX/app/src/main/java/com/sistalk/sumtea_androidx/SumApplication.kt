@@ -8,6 +8,7 @@ import com.sistalk.framework.log.LogUtil
 import com.sistalk.framework.manager.ActivityManager
 import com.sistalk.framework.manager.AppFrontBack
 import com.sistalk.framework.manager.AppFrontBackListener
+import com.sistalk.framework.toast.TipsToast
 
 
 class SumApplication:Application() {
@@ -23,9 +24,13 @@ class SumApplication:Application() {
     override fun onCreate() {
         super.onCreate()
 
+        // 1.注册app前后台切换监听
         appFrontBackRegister()
-
+        // 2.注册Activity生命周期监听
         registerActivityLifecycle()
+        // 3.初始toast
+        TipsToast.init(this)
+
     }
 
 
