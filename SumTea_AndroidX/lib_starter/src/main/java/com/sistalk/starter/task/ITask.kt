@@ -2,6 +2,7 @@ package com.sistalk.starter.task
 
 import androidx.annotation.IntRange
 import android.os.Process
+import java.util.concurrent.Executor
 
 
 interface ITask {
@@ -15,4 +16,59 @@ interface ITask {
     fun priority():Int
 
 
+    /**
+     * 执行任务
+     *
+     */
+    fun run()
+
+    /**
+     * Task执行所在的线程池，可指定，一般默认
+     * */
+    fun runOn():Executor?
+
+    /**
+     *
+     * 依赖关系
+     * */
+    fun dependsOn():List<Class<out Task?>?>?
+
+    /**
+     * 异步线程执行的Task是否需要在被调用await的时候等待，默认不需要
+     * */
+    fun needWait():Boolean
+
+    /**
+     * 是否在主线程执行
+     * */
+    fun runOnMainThread():Boolean
+
+    /**
+     *
+     * 只是在主线程执行
+     * */
+    fun onlyInMainProcess():Boolean
+
+    /**
+     *
+     * Task主任务执行完成后需要执行的任务
+     * */
+    val tailRunnable:Runnable?
+
+    /**
+     * 设置任务callBack
+     * */
+    fun setTaskCallBack(callBack:TaskCallBack?)
+
+    /**
+     * 是否需要回调
+     * */
+    fun needCall():Boolean
+}
+
+/**
+ * 任务callBack
+ * */
+interface TaskCallBack {
+    fun call()
 }
