@@ -4,14 +4,20 @@ import androidx.collection.ArraySet
 import com.sistalk.framework.log.LogUtil
 import com.sistalk.starter.task.Task
 
+/**
+ * 任务排序
+ * */
 object TaskSortUtil {
     // 高优先级的Task
     private val sNewTaskHigh: MutableList<Task> = ArrayList()
 
+    /**
+     * 任务的有向无环拓扑排序
+     * */
     @Synchronized
-    fun getSortResult(originTasks: List<Task>, clsLaunchTasks: List<Class<out Task>>):List<Task> {
+    fun getSortResult(originTasks: List<Task>, clsLaunchTasks: List<Class<out Task>>): List<Task> {
         val makeTime = System.currentTimeMillis()
-        val dependSet:MutableSet<Int> = ArraySet()
+        val dependSet: MutableSet<Int> = ArraySet()
         val graph = DirectionGraph(originTasks.size)
         for (i in originTasks.indices) {
             val task = originTasks[i]
@@ -19,7 +25,7 @@ object TaskSortUtil {
                 continue
             }
 
-            task.dependsOn()?.let { list->
+            task.dependsOn()?.let { list ->
                 for (clazz in list) {
                     clazz?.let { cls ->
                         val indexOfDepend = getIndexOfTask(originTasks, clsLaunchTasks, cls)
@@ -33,21 +39,28 @@ object TaskSortUtil {
             }
         }
 
-        val  indexList:List<Int> = graph.topologicalSort()
-        val newTaskAll = getResultTasks(originTasks,dependSet,indexList)
+        val indexList: List<Int> = graph.topologicalSort()
+        val newTaskAll = getResultTasks(originTasks, dependSet, indexList)
         LogUtil.d("task analysis cost make time " + (System.currentTimeMillis() - makeTime))
-
+        printAllTaskName(newTaskAll, true)
         return newTaskAll
     }
 
-    private fun getResultTasks(originTasks: List<Task>, dependSet:Set<Int>, indexList:List<Int>):List<Task> {
+    /**
+     * 获取最终任务列表
+     * */
+    private fun getResultTasks(
+        originTasks: List<Task>,
+        dependSet: Set<Int>,
+        indexList: List<Int>
+    ): List<Task> {
         val newTaskAll: MutableList<Task> = ArrayList(originTasks.size)
         // 被其他任务依赖的
-        val newTasksDepended:MutableList<Task> = ArrayList()
+        val newTasksDepended: MutableList<Task> = ArrayList()
         // 没有依赖的
-        val newTasksWithoutDepend:MutableList<Task> = ArrayList()
+        val newTasksWithoutDepend: MutableList<Task> = ArrayList()
         // 需要提升自己优先级的，先执行（这个先是相对于没有依赖的先）
-        val newTasksRunAsSoon:MutableList<Task> = ArrayList()
+        val newTasksRunAsSoon: MutableList<Task> = ArrayList()
 
         for (index in indexList) {
             if (dependSet.contains(index)) {
@@ -70,11 +83,24 @@ object TaskSortUtil {
         return newTaskAll
     }
 
+    private fun printAllTaskName(newTasksAll: List<Task>, isPrintName: Boolean) {
+        if (!isPrintName) return
+        for (task in newTasksAll) {
+            LogUtil.d(task.javaClass.simpleName)
+        }
+    }
+
+    val taskHigh:List<Task>
+        get() = sNewTaskHigh
 
     /**
      * 获取任务在任务列表中的index
      * */
-    private fun getIndexOfTask(originTasks: List<Task>, clsLaunchTasks: List<Class<out Task>>, cls:Class<*>):Int {
+    private fun getIndexOfTask(
+        originTasks: List<Task>,
+        clsLaunchTasks: List<Class<out Task>>,
+        cls: Class<*>
+    ): Int {
         val index = clsLaunchTasks.indexOf(cls)
         if (index >= 0) {
             return index

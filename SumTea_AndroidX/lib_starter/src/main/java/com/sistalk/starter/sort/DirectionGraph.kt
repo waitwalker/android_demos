@@ -7,12 +7,12 @@ import java.util.Vector
 /**
  * 有向无环的拓扑排序算法
  * */
-class DirectionGraph(private val mVertexCount:Int) {
+class DirectionGraph(private val mVertexCount: Int) {
 
     /**
      * 邻接表
      * */
-    private val mAdjTable:Array<MutableList<Int>?> = arrayOfNulls(mVertexCount)
+    private val mAdjTable: Array<MutableList<Int>?> = arrayOfNulls(mVertexCount)
 
     init {
         for (i in 0 until mVertexCount) {
@@ -23,14 +23,14 @@ class DirectionGraph(private val mVertexCount:Int) {
     /**
      * 添加边
      * */
-    fun addEdge(u:Int, v:Int) {
+    fun addEdge(u: Int, v: Int) {
         mAdjTable[u]?.add(v)
     }
 
     /**
      * 拓扑排序
      * */
-    fun topologicalSort():Vector<Int>{
+    fun topologicalSort(): Vector<Int> {
         val inDegree = IntArray(mVertexCount)
         // 初始化所有点的入度数量
         for (i in 0 until mVertexCount) {
@@ -39,7 +39,7 @@ class DirectionGraph(private val mVertexCount:Int) {
                 inDegree[node]++
             }
         }
-        val queue:Queue<Int> = LinkedList()
+        val queue: Queue<Int> = LinkedList()
         // 找出所有入度为0的点
         for (i in 0 until mVertexCount) {
             if (inDegree[i] == 0) {
@@ -48,12 +48,12 @@ class DirectionGraph(private val mVertexCount:Int) {
         }
         var cnt = 0
         val topOrder = Vector<Int>()
-        while (!queue.isEmpty()){
+        while (!queue.isEmpty()) {
             val u = queue.poll()
             u?.let {
                 topOrder.add(u)
                 // 找到该点（入度为0）的所有邻接点
-                mAdjTable[u]?.forEach{ node ->
+                mAdjTable[u]?.forEach { node ->
                     // 把这个点的入度减一，如果入度变为了0，那么添加到入度为0的队列里
                     if (--inDegree[node] == 0) {
                         queue.add(node)
