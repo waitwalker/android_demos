@@ -58,5 +58,22 @@ class InitMMKVTask():Task() {
         )
         LogUtil.d("mmkv root:$rootDir", tag = "MMKV")
     }
+}
+
+class InitAppManagerTask():Task() {
+
+    override fun needWait(): Boolean {
+        return true
+    }
+
+    override fun dependsOn(): List<Class<out Task?>?>? {
+        val tasks = mutableListOf<Class<out Task?>>()
+        tasks.add(InitSumHelperTask::class.java)
+        return tasks
+    }
+
+    override fun run() {
+
+    }
 
 }
