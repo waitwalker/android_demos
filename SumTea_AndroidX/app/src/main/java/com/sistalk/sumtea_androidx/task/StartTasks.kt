@@ -2,10 +2,15 @@ package com.sistalk.sumtea_androidx.task
 
 import android.app.Application
 import androidx.multidex.BuildConfig
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.ClassicsHeader
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.sistalk.framework.helper.SumAppHelper
 import com.sistalk.framework.log.LogUtil
+import com.sistalk.framework.manager.AppManager
 import com.sistalk.starter.task.Task
 import com.sistalk.starter.utils.DispatcherExecutor
+import com.sistalk.sumtea_androidx.R
 import com.tencent.mmkv.MMKV
 import com.tencent.mmkv.MMKVLogLevel
 import java.util.concurrent.ExecutorService
@@ -73,7 +78,25 @@ class InitAppManagerTask():Task() {
     }
 
     override fun run() {
+        AppManager.init(SumAppHelper.getApplication())
+    }
+}
 
+
+class InitRefreshLayoutTask():Task() {
+
+    override fun needWait(): Boolean {
+        return true
+    }
+
+    override fun run() {
+        SmartRefreshLayout.setDefaultRefreshHeaderCreator{ context, layout ->
+            layout.setPrimaryColorsId(R.color.white)
+            ClassicsHeader(context)
+        }
+        SmartRefreshLayout.setDefaultRefreshFooterCreator{ context, layout ->
+            ClassicsFooter(context)
+        }
     }
 
 }
