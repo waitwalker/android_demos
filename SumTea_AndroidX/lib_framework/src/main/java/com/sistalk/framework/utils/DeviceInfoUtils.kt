@@ -7,7 +7,6 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import android.telephony.TelephonyManager
-import android.util.Log
 import com.sistalk.framework.log.LogUtil
 import java.io.FileInputStream
 import java.net.NetworkInterface
@@ -78,7 +77,7 @@ object DeviceInfoUtils {
         try {
             LogUtil.d("start init device mac, wifi mac and ssid")
             val vm = appContext.applicationContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
-            initMacAddress(vm)
+            initMacAddress()
             if (!vm.connectionInfo.bssid.isNullOrEmpty()) {
                 wifiMacAddress = vm.connectionInfo.bssid
             }
@@ -91,7 +90,7 @@ object DeviceInfoUtils {
         }
     }
 
-    private fun initMacAddress(vm:WifiManager) {
+    private fun initMacAddress() {
         try {
             // 6.0~7.0读取设备文件获取
             val arrStrings = arrayOf("/sys/class/net/wlan0/address","/sys/devices/virtual/net/wlan0/address")
@@ -129,11 +128,10 @@ object DeviceInfoUtils {
         try {
             LogUtil.d("start init device imei and imsi")
             val tm = appContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            var tmpImei = ""
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                tmpImei = tm.imei
+            val tmpImei: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                tm.imei
             } else {
-                tmpImei = tm.deviceId
+                tm.deviceId
             }
             if (tmpImei.isNotEmpty()) {
                 imei = tmpImei.lowercase()

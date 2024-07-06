@@ -10,7 +10,7 @@ object LogUtil {
     private var isDebug = false
     private var mLogPath:String? = null
 
-    fun init(application: Application, logPath:String, namePrefix:String = "SRM", isDebug:Boolean = false) {
+    fun init(application: Application, logPath: String, isDebug: Boolean = false) {
         LogUtil.application = application
         LogUtil.isDebug = isDebug
         mLogPath = logPath

@@ -51,7 +51,7 @@ class TaskDispatcher private constructor() {
             // 非主线程且需要wait的，主线程不需要CountDownLatch也是同步的
             if (ifNeedWait(it)) {
                 mNeedWaitTasks.add(it)
-                mNeedWaitCount.getAndDecrement()
+                mNeedWaitCount.getAndIncrement()
             }
         }
         return this
@@ -190,7 +190,7 @@ class TaskDispatcher private constructor() {
 
     fun executeTask(task: Task) {
         if (ifNeedWait(task)) {
-            mNeedWaitCount.getAndDecrement()
+            mNeedWaitCount.getAndIncrement()
         }
         task.runOn()?.execute(DispatchRunnable(task, this))
     }
