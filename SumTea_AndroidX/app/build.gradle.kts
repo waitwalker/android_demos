@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -18,6 +19,11 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        ksp {
+            arg("AROUTER_MODULE_NAME", project.name)
+        }
+
     }
 
     buildTypes {
@@ -80,4 +86,6 @@ dependencies {
     implementation(libs.refresh.layout.kernel)
     implementation(libs.refresh.header.classics)
     implementation(libs.refresh.footer.classics)
+    implementation(libs.arouter.api)
+    ksp(libs.arouter.compiler)
 }

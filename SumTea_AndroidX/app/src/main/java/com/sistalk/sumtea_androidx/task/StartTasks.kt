@@ -2,6 +2,7 @@ package com.sistalk.sumtea_androidx.task
 
 import android.app.Application
 import androidx.multidex.BuildConfig
+import com.alibaba.android.arouter.launcher.ARouter
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
@@ -83,6 +84,9 @@ class InitAppManagerTask():Task() {
 }
 
 
+/**
+ * 全局刷新配置
+ * */
 class InitRefreshLayoutTask():Task() {
 
     override fun needWait(): Boolean {
@@ -98,5 +102,27 @@ class InitRefreshLayoutTask():Task() {
             ClassicsFooter(context)
         }
     }
+}
 
+/**
+ * 初始化路由
+ * */
+class InitARouterTask():Task() {
+    override fun needWait(): Boolean {
+        return true
+    }
+
+    override fun dependsOn(): List<Class<out Task?>?>? {
+        val tasks = mutableListOf<Class<out Task?>>()
+        tasks.add(InitSumHelperTask::class.java)
+        return tasks
+    }
+
+    override fun run() {
+        if (BuildConfig.DEBUG) {
+            ARouter.openLog()
+            ARouter.openDebug()
+        }
+        ARouter.init(SumAppHelper.getApplication())
+    }
 }
