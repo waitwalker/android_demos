@@ -13,3 +13,9 @@
 .externalNativeBuild
 .cxx
 local.properties
+keyStore
+*.apk
+/app/debug/*.apk
+/app/release/*.apk
+/app/debug/*.aab
+/app/release/*.aab

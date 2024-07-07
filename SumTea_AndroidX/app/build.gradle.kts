@@ -6,6 +6,15 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        create("release") {
+            storeFile =
+                file("/Users/waitwalker/Desktop/work/android-demos/SumTea_AndroidX/keyStore")
+            storePassword = "M123456"
+            keyAlias = "keyStore"
+            keyPassword = "M123456"
+        }
+    }
     namespace = BuildConfig.applicationId
     compileSdk = BuildConfig.compileSdk
 
@@ -25,7 +34,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true // 开启混淆
+            isShrinkResources = true // 资源压缩，移除没有用的资源
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -42,9 +52,7 @@ android {
     buildFeatures {
         compose = true
     }
-//    composeOptions {
-//        kotlinCompilerExtensionVersion = "1.5.14"
-//    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
