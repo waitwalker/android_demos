@@ -24,3 +24,4 @@ rootProject.name = "SumTea_AndroidX"
 include(":app")
 include(":lib_framework")
 include(":lib_starter")
+include(":module_main")

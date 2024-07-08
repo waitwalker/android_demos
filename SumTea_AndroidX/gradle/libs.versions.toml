@@ -18,6 +18,7 @@ refresh = "2.1.0"
 arouter = "1.5.2"
 arouterCompler = "1.6.10-1.0.3"
 ksp = "2.0.0-1.0.22"
+activity = "1.9.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -45,6 +46,7 @@ refresh-header-classics = { module = "io.github.scwang90:refresh-header-classics
 refresh-layout-kernel = { module = "io.github.scwang90:refresh-layout-kernel", version.ref = "refresh" }
 arouter-api = { module = "com.alibaba:arouter-api", version.ref = "arouter" }
 arouter-compiler = { module = "com.github.JailedBird:ArouterKspCompiler", version.ref = "arouterCompler" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
