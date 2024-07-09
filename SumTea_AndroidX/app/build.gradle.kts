@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kapt)
     alias(libs.plugins.compose.compiler)
 }
 
@@ -50,7 +51,7 @@ android {
         jvmTarget = "1.8"
     }
     buildFeatures {
-        compose = true
+
     }
 
     packaging {

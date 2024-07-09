@@ -1,11 +1,11 @@
 package com.sistalk.framework.base
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.sistalk.framework.R
+import com.sistalk.framework.toast.TipsToast
+import com.sistalk.framework.utils.LoadingUtils
 
 /**
  * activity基类
@@ -15,18 +15,14 @@ abstract class BaseActivity : AppCompatActivity() {
     protected var TAG = this::class.java.simpleName
 
     private val dialogUtils by lazy {
-        LoadingUtils()
+        LoadingUtils(this)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_base)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        setContentLayout()
+        initView(savedInstanceState)
+        initData()
     }
 
 
@@ -53,10 +49,31 @@ abstract class BaseActivity : AppCompatActivity() {
     open fun initData() {}
 
     fun showLoading() {
-
+        showLoading(getString(R.string.default_loading))
     }
 
     fun showLoading(msg:String?) {
-
+        dialogUtils.show(msg)
     }
+
+    fun showLoading(@StringRes res:Int) {
+        showLoading(getString(res))
+    }
+
+    fun dismissLoading() {
+        dialogUtils.dismiss()
+    }
+
+    fun showToast(msg:String) {
+        TipsToast.showTips(msg)
+    }
+
+    fun showToast(@StringRes resId:Int) {
+        TipsToast.showTips(resId)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+    }
+
 }

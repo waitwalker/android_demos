@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">lib_framework</string>
     <string name="loading_text">加载中</string>
+    <string name="default_loading">加载中</string>
 </resources>
