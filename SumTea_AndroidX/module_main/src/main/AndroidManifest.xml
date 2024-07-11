@@ -9,7 +9,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SumTea_AndroidX">
         <activity
-            android:name=".SplashActivity"
+            android:name=".ui.SplashActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
