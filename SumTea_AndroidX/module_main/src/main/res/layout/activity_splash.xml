@@ -1,10 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/splash_frame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SplashActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/bg_imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/bg_welcome"
+        tools:ignore="ContentDescription,ImageContrastCheck" />
+
+    <TextView
+        android:id="@+id/skip_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/dp_62"
+        android:layout_marginEnd="@dimen/dp_26"
+        android:background="@drawable/bg_skip_btn"
+        android:paddingStart="@dimen/dp_10"
+        android:paddingTop="@dimen/dp_6"
+        android:paddingEnd="@dimen/dp_10"
+        android:paddingBottom="@dimen/dp_6"
+        android:text="@string/skip"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_13"
+        tools:ignore="TextSizeCheck,TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/appName_textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:padding="@dimen/dp_10"
+        android:text="@string/app_name"
+        android:textColorLink="#222427"
+        android:textSize="@dimen/sp_28" />
+</FrameLayout>

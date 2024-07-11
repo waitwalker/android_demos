@@ -18,4 +18,8 @@ abstract class BaseDataBindActivity<DB : ViewBinding> : BaseActivity() {
         mBinding = method.invoke(this, layoutInflater)!!.saveAsUnChecked()
         setContentView(mBinding.root)
     }
+
+    override fun getLayoutResId(): Int {
+        return 0
+    }
 }
