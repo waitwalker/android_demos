@@ -2,6 +2,8 @@ package com.sistalk.framework.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Build
+import android.os.Bundle
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -22,7 +24,16 @@ object StatusBarUtil {
         var result = STATUS_BAR_TYPE_DEFAULT
         if (activity != null) {
             result = STATUS_BAR_TYPE_ANDROID_M
+            if (setStatusBarModeForAndroidM(activity.window, true)) {
+                result = STATUS_BAR_TYPE_ANDROID_M
+            }
+
+            if (setStatusBarModeForMIUI(activity.window,false)) {
+                result = STATUS_BAR_TYPE_MI_UI
+            }
+
         }
+
         return result
     }
 
@@ -59,6 +70,18 @@ object StatusBarUtil {
             }
         }
 
+        return result
+    }
+
+    /**
+     * 设置原生Android 6.0以上系统状态栏
+     * */
+    private fun setStatusBarModeForAndroidM(window: Window?, darkText: Boolean):Boolean {
+        var result = false
+        if (window != null) {
+            window.decorView.systemUiVisibility = if (darkText) View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or 0x0000200 else View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_VISIBLE
+            result = true
+        }
         return result
     }
 }
