@@ -2,6 +2,7 @@ package com.sistalk.framework.ext
 
 import android.os.SystemClock
 import android.view.View
+import android.view.ViewGroup
 import com.sistalk.framework.R
 
 /**
@@ -63,5 +64,31 @@ class DebounceAction(val view: View, var block: ((View) -> Unit)) : Runnable {
             block(view)
         }
     }
+}
 
+/**
+ * 设置View Margin
+ * */
+fun View.margin(
+    leftMargin: Int = Int.MAX_VALUE,
+    topMargin: Int = Int.MAX_VALUE,
+    rightMargin: Int = Int.MAX_VALUE,
+    bottomMargin: Int = Int.MAX_VALUE
+) {
+    val params = layoutParams as ViewGroup.MarginLayoutParams
+    if (leftMargin != Int.MAX_VALUE) {
+        params.leftMargin = leftMargin
+    }
+
+    if (topMargin != Int.MAX_VALUE) {
+        params.topMargin = topMargin
+    }
+
+    if (rightMargin != Int.MAX_VALUE) {
+        params.rightMargin = rightMargin
+    }
+
+    if (bottomMargin != Int.MAX_VALUE) {
+        params.bottomMargin = bottomMargin
+    }
 }
