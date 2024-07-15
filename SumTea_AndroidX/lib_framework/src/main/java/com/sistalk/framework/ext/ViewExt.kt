@@ -1,5 +1,9 @@
 package com.sistalk.framework.ext
 
+import android.animation.Animator
+import android.animation.ValueAnimator
+import android.annotation.SuppressLint
+import android.icu.text.ListFormatter.Width
 import android.os.SystemClock
 import android.view.View
 import android.view.ViewGroup
@@ -91,4 +95,39 @@ fun View.margin(
     if (bottomMargin != Int.MAX_VALUE) {
         params.bottomMargin = bottomMargin
     }
+}
+
+/**
+ * 设置带动画的宽度
+ * */
+fun View.animateWidth(
+    targetValue: Int,
+    duration: Long = 400,
+    listener: Animator.AnimatorListener? = null,
+    action: ((Float) -> Unit)? = null
+) {
+    post {
+        ValueAnimator.ofInt(width, targetValue).apply {
+            addUpdateListener{
+                width(it.animatedValue as Int)
+                action?.invoke(it.animatedFraction)
+            }
+            if (listener != null) addListener(listener)
+            setDuration(duration)
+            start()
+        }
+    }
+}
+
+/**
+ * 设置View宽度
+ * */
+fun View.width(width: Int):View {
+    val params = layoutParams?:ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    params.width = width
+    layoutParams = params
+    return this
 }
