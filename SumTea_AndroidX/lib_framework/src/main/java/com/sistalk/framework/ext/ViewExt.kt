@@ -1,6 +1,7 @@
 package com.sistalk.framework.ext
 
 import android.animation.Animator
+import android.animation.IntEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.icu.text.ListFormatter.Width
@@ -108,8 +109,30 @@ fun View.animateWidth(
 ) {
     post {
         ValueAnimator.ofInt(width, targetValue).apply {
-            addUpdateListener{
+            addUpdateListener {
                 width(it.animatedValue as Int)
+                action?.invoke(it.animatedFraction)
+            }
+            if (listener != null) addListener(listener)
+            setDuration(duration)
+            start()
+        }
+    }
+}
+
+/**
+ * 设置高度
+ * */
+fun View.animateHeight(
+    targetValue: Int,
+    duration: Long = 400,
+    listener: Animator.AnimatorListener? = null,
+    action: ((Float) -> Unit)? = null
+) {
+    post {
+        ValueAnimator.ofInt(height, targetValue).apply {
+            addUpdateListener {
+                height(it.animatedValue as Int)
                 action?.invoke(it.animatedFraction)
             }
             if (listener != null) addListener(listener)
@@ -122,12 +145,67 @@ fun View.animateWidth(
 /**
  * 设置View宽度
  * */
-fun View.width(width: Int):View {
-    val params = layoutParams?:ViewGroup.LayoutParams(
+fun View.width(width: Int): View {
+    val params = layoutParams ?: ViewGroup.LayoutParams(
         ViewGroup.LayoutParams.MATCH_PARENT,
         ViewGroup.LayoutParams.WRAP_CONTENT
     )
     params.width = width
+    layoutParams = params
+    return this
+}
+
+/**
+ * 设置View 高度
+ * */
+fun View.height(height: Int): View {
+    val params = layoutParams ?: ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    params.height = height
+    layoutParams = params
+    return this
+}
+
+/**
+ * 设置带动画的宽高
+ * */
+fun View.animateWidthAndHeight(
+    targetWidth: Int,
+    targetHeight: Int,
+    duration: Long = 400,
+    listener: Animator.AnimatorListener? = null,
+    action: ((Float) -> Unit)? = null
+) {
+    post {
+        val startHeight = height
+        val evaluator = IntEvaluator()
+        ValueAnimator.ofInt(width, targetWidth).apply {
+            addUpdateListener {
+                widthAndHeight(
+                    it.animatedValue as Int,
+                    evaluator.evaluate(it.animatedFraction, startHeight, targetHeight)
+                )
+                action?.invoke(it.animatedFraction)
+            }
+            if (listener != null) addListener(listener)
+            setDuration(duration)
+            start()
+        }
+    }
+}
+
+/**
+ * 设置View宽高
+ * */
+fun View.widthAndHeight(width: Int, height: Int): View {
+    val params = layoutParams ?: ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    params.width = width
+    params.height = height
     layoutParams = params
     return this
 }
