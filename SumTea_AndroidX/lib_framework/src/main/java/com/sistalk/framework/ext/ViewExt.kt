@@ -4,10 +4,17 @@ import android.animation.Animator
 import android.animation.IntEvaluator
 import android.animation.ValueAnimator
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
 import android.icu.text.ListFormatter.Width
 import android.os.SystemClock
+import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.RecyclerView
 import com.sistalk.framework.R
 
 /**
@@ -209,3 +216,177 @@ fun View.widthAndHeight(width: Int, height: Int): View {
     layoutParams = params
     return this
 }
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    visibility = View.INVISIBLE
+}
+
+val View.isGone: Boolean
+    get() {
+        return visibility == View.VISIBLE
+    }
+
+val View.isVisible: Boolean
+    get() {
+        return visibility == View.VISIBLE
+    }
+
+val View.isInvisible: Boolean
+    get() {
+        return visibility == View.INVISIBLE
+    }
+
+/**
+ * View可见性toggle 切换
+ * */
+fun View.toggleVisibility() {
+    visibility = if (visibility == View.GONE) View.VISIBLE else View.GONE
+}
+
+
+/**
+ * 设置高度，限制在min 和 max之间
+ * */
+fun View.limitHeight(h: Int, min: Int, max: Int): View {
+    val params = layoutParams ?: ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    when {
+        h < min -> params.height = min
+        h > max -> params.height = max
+        else -> params.height = h
+    }
+    layoutParams = params
+    return this
+}
+
+/**
+ * 设置宽度，限制在min 和 max之间
+ * */
+fun View.limitWidth(w: Int, min: Int, max: Int): View {
+    val params = layoutParams ?: ViewGroup.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.WRAP_CONTENT
+    )
+    when {
+        w < min -> params.width = min
+        w > max -> params.width = max
+        else -> params.width = w
+    }
+    layoutParams = params
+    return this
+}
+
+/**
+ * 设置View的margin
+ * */
+fun View.margin(
+    startMargin: Int = Int.MAX_VALUE,
+    topMargin: Int = Int.MAX_VALUE,
+    endMargin: Int = Int.MAX_VALUE,
+    bottomMargin: Int = Int.MAX_VALUE,
+    supportRTL: Boolean = true
+): View {
+    val params = layoutParams as? ViewGroup.MarginLayoutParams
+    if (startMargin != Int.MAX_VALUE) {
+        if (supportRTL)
+            params?.marginStart = startMargin
+        else
+            params?.leftMargin = startMargin
+    }
+
+    if (topMargin != Int.MAX_VALUE) {
+        params?.topMargin = topMargin
+    }
+
+    if (endMargin != Int.MAX_VALUE) {
+        if (supportRTL)
+            params?.marginEnd = endMargin
+        else
+            params?.rightMargin = endMargin
+    }
+    if (bottomMargin != Int.MAX_VALUE) {
+        params?.bottomMargin = bottomMargin
+    }
+    params?.let {
+        layoutParams = it
+    }
+    return this
+}
+
+/**
+ * 获取View的截图，支持截取整个RecyclerView列表的长截图
+ * 注意：请确保View的已经测量完毕，如果宽高为0，则会抛异常
+ * */
+fun View.toBitmap(): Bitmap {
+    if (measuredWidth == 0 || measuredHeight == 0) {
+        throw RuntimeException("make sure measure width or measure height")
+    }
+    return when (this) {
+        is RecyclerView -> {
+            this.scrollToPosition(0)
+            this.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED)
+            )
+
+            val bmp = Bitmap.createBitmap(width, measuredHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bmp)
+            if (background != null) {
+                background.setBounds(0, 0, width, measuredHeight)
+                background.draw(canvas)
+            } else {
+                canvas.drawColor(Color.WHITE)
+            }
+            this.draw(canvas)
+            this.measure(
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.AT_MOST)
+            )
+            bmp
+        }
+
+        else -> {
+            val screenshot =
+                Bitmap.createBitmap(measuredWidth, measuredHeight, Bitmap.Config.ARGB_4444)
+            val canvas = Canvas(screenshot)
+            if (background != null) {
+                background.setBounds(0, 0, width, measuredHeight)
+                background.draw(canvas)
+            } else {
+                canvas.drawColor(Color.WHITE)
+            }
+            draw(canvas)
+            screenshot
+        }
+    }
+}
+
+val View.layoutGravity: Int
+    get() = when (val lp = layoutParams) {
+        is FrameLayout.LayoutParams -> lp.gravity
+        is LinearLayout.LayoutParams -> lp.gravity
+        else -> Gravity.NO_GRAVITY
+    }
+
+fun View.layoutGravity(gravity: Int) {
+    when (val lp = layoutParams) {
+        is FrameLayout.LayoutParams -> lp.gravity = gravity
+        is LinearLayout.LayoutParams -> lp.gravity = gravity
+        else -> return
+    }
+}
+
+inline val ViewGroup.children
+    get() = (0 until childCount).map {
+        getChildAt(it)
+    }
