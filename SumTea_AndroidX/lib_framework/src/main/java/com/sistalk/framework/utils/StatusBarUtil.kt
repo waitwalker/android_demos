@@ -9,6 +9,7 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.MarginLayoutParams
 import android.view.Window
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -16,9 +17,11 @@ import android.widget.LinearLayout
 import androidx.annotation.ColorInt
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.setMargins
+import com.sistalk.framework.ext.gone
+import com.sistalk.framework.ext.visible
 //import com.sistalk.framework.R
 import com.sistalk.framework.log.LogUtil
-
 
 
 /**
@@ -74,42 +77,12 @@ object StatusBarUtil {
     }
 
     @SuppressLint("PrivateApi")
-    private fun setStatusBarForFlyMe(window: Window?, darkText: Boolean): Boolean {
-        var result = false
-        if (window != null) {
-            try {
-                val lp = window.attributes
-                val darkFlag =
-                    WindowManager.LayoutParams::class.java.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
-                val meiZuFlags =
-                    WindowManager.LayoutParams::class.java.getDeclaredField("meizuFlags")
-                darkFlag.isAccessible = true
-                meiZuFlags.isAccessible = true
-                val bit = darkFlag.getInt(null)
-                var value = meiZuFlags.getInt(lp)
-                value = if (darkText) {
-                    value or bit
-                } else {
-                    value and bit.inv()
-                }
-                meiZuFlags.setInt(lp, value)
-                window.attributes = lp
-                result = true
-            } catch (e: Exception) {
-                LogUtil.e("setStatusBarForFlyMe error = $e", tag = tag)
-            }
-        }
-        return result
-    }
-
-
-    @SuppressLint("PrivateApi")
     private fun setStatusBarModeForMIUI(window: Window?, darkText: Boolean): Boolean {
         var result = false
         if (window != null) {
             val clazz: Class<*> = window.javaClass
             try {
-                var darkModeFlag = 0
+                val darkModeFlag: Int
                 val layoutParams = Class.forName("android.view.MiuiWindowManager\$LayoutParams")
                 val field = layoutParams.getField("EXTRA_FLAG_STATUS_BAR_DARK_MODE")
                 darkModeFlag = field.getInt(layoutParams)
@@ -142,6 +115,36 @@ object StatusBarUtil {
         return result
     }
 
+    @SuppressLint("PrivateApi")
+    private fun setStatusBarForFlyMe(window: Window?, darkText: Boolean): Boolean {
+        var result = false
+        if (window != null) {
+            try {
+                val lp = window.attributes
+                val darkFlag =
+                    WindowManager.LayoutParams::class.java.getDeclaredField("MEIZU_FLAG_DARK_STATUS_BAR_ICON")
+                val meiZuFlags =
+                    WindowManager.LayoutParams::class.java.getDeclaredField("meizuFlags")
+                darkFlag.isAccessible = true
+                meiZuFlags.isAccessible = true
+                val bit = darkFlag.getInt(null)
+                var value = meiZuFlags.getInt(lp)
+                value = if (darkText) {
+                    value or bit
+                } else {
+                    value and bit.inv()
+                }
+                meiZuFlags.setInt(lp, value)
+                window.attributes = lp
+                result = true
+            } catch (e: Exception) {
+                LogUtil.e("setStatusBarForFlyMe error = $e", tag = tag)
+            }
+        }
+        return result
+    }
+
+
     /**
      * 设置原生Android 6.0以上系统状态栏
      * */
@@ -155,7 +158,7 @@ object StatusBarUtil {
         return result
     }
 
-    fun setStatusBarModeForOpp(window: Window, darkText: Boolean):Boolean {
+    fun setStatusBarModeForOpp(window: Window, darkText: Boolean): Boolean {
         var result = false
         try {
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
@@ -168,7 +171,7 @@ object StatusBarUtil {
                 }
             window.decorView.systemUiVisibility = vis
             result = true
-        } catch (e:Exception) {
+        } catch (e: Exception) {
             LogUtil.e("setStatusBarModeForOpp error = $e", tag = tag)
         }
         return result
@@ -177,60 +180,111 @@ object StatusBarUtil {
     /**
      * 设置状态栏颜色
      * */
-    fun setColor(activity: Activity, @ColorInt color:Int, statusBarAlpha:Int) {
+    fun setColor(activity: Activity, @ColorInt color: Int, statusBarAlpha: Int) {
         // 先设置全屏
         setFullScreen(activity)
         // 再透明状态栏的垂直下方放置一个和状态栏同样高度的View
         addStatusBarBehind(activity, color, statusBarAlpha)
     }
 
-    private fun addStatusBarBehind(activity: Activity,@ColorInt color: Int,statusBarAlpha: Int) {
+    private fun addStatusBarBehind(activity: Activity, @ColorInt color: Int, statusBarAlpha: Int) {
         // 获取window 下的decorView
         val decorView = activity.window.decorView as ViewGroup
         val count = decorView.childCount
         // 判断是否已经添加了statusBarView
         if (count > 0 && decorView.getChildAt(count - 1) is StatusBarView) {
-            decorView.getChildAt(count - 1).setBackgroundColor(calculateStatusColor(color,statusBarAlpha))
+            decorView.getChildAt(count - 1)
+                .setBackgroundColor(calculateStatusColor(color, statusBarAlpha))
         } else {
-            val statusBarView = createStatusBarView(activity,color,statusBarAlpha)
+            val statusBarView = createStatusBarView(activity, color, statusBarAlpha)
             decorView.addView(statusBarView)
         }
         setRootView(activity)
     }
 
-    fun setTranslucentImageHeader(activity: Activity,alpha: Int,needOffsetView:View?,intArray: IntArray = intArrayOf(0,0,0),hasOffset:Boolean = true) {
+    fun setTranslucentImageHeader(
+        activity: Activity,
+        alpha: Int,
+        needOffsetView: View?,
+        intArray: IntArray = intArrayOf(0, 0, 0),
+        hasOffset: Boolean = true
+    ) {
         setFullScreen(activity)
         val decorView = activity.window.decorView as ViewGroup
         val count = decorView.childCount
-        if (count > 0 && decorView.getChildAt(count-1) is StatusBarView) {
-            decorView.getChildAt(count -1).setBackgroundColor(Color.argb(alpha,intArray[0],intArray[1], intArray[2]))
+        if (count > 0 && decorView.getChildAt(count - 1) is StatusBarView) {
+            decorView.getChildAt(count - 1)
+                .setBackgroundColor(Color.argb(alpha, intArray[0], intArray[1], intArray[2]))
         } else {
-            val statusView = createStatusBarView(activity,alpha)
+            val statusView = createTranslucentStatusBarView(activity, alpha)
+            decorView.addView(statusView)
+        }
+        if (needOffsetView != null && hasOffset) {
+            val layoutParams = needOffsetView.layoutParams as MarginLayoutParams
+            layoutParams.setMargins(0, getStatusBarHeight(activity), 0, 0)
         }
     }
 
     fun hideStatusBarView(activity: Activity) {
         val decorView = activity.window.decorView as ViewGroup
         val count = decorView.childCount
-        if (count > 0 && decorView.getChildAt(count -1) is StatusBarView) {
+        if (count > 0 && decorView.getChildAt(count - 1) is StatusBarView) {
             decorView.getChildAt(count - 1).gone()
         }
+    }
+
+    fun showStatusBarView(activity: Activity) {
+        val decorView = activity.window.decorView as ViewGroup
+        val count = decorView.childCount
+        if (count > 0 && decorView.getChildAt(count - 1) is StatusBarView) {
+            decorView.getChildAt(count - 1).visible()
+        }
+    }
+
+    private fun createTranslucentStatusBarView(activity: Activity, alpha: Int): StatusBarView {
+        val statusBarView = StatusBarView(activity)
+        val params = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            getStatusBarHeight(activity)
+        )
+        statusBarView.layoutParams = params
+        statusBarView.setBackgroundColor(Color.argb(alpha, 0, 0, 0))
+        return statusBarView
+    }
+
+    private fun setRootView(activity: Activity) {
+        val rootView =
+            (activity.findViewById<View>(R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
+        ViewCompat.setFitsSystemWindows(rootView, true)
+        rootView.clipToPadding = true
+    }
+
+    private fun createStatusBarView(activity: Activity, color: Int, alpha: Int): StatusBarView {
+        val statusBarView = StatusBarView(activity)
+        val params = LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            getStatusBarHeight(activity)
+        )
+        statusBarView.layoutParams = params
+        statusBarView.setBackgroundColor(calculateStatusColor(color, alpha))
+        return statusBarView
     }
 
     /**
      * 获取状态栏高度
      * */
-    private fun getStatusBarHeight(activity: Activity):Int {
+    fun getStatusBarHeight(activity: Activity): Int {
         var statusBarHeight = 0
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activity.window.decorView.setOnApplyWindowInsetsListener{ _, insets ->
+            activity.window.decorView.setOnApplyWindowInsetsListener { _, insets ->
                 statusBarHeight = insets.getInsets(WindowInsets.Type.statusBars()).top
                 insets
             }
             activity.window.decorView.requestApplyInsets()
         } else {
-            val rootView = (activity.findViewById<View>(R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
+            val rootView =
+                (activity.findViewById<View>(R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
             ViewCompat.setOnApplyWindowInsetsListener(rootView) { _, insets ->
                 statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
                 insets
@@ -239,7 +293,7 @@ object StatusBarUtil {
         return statusBarHeight
     }
 
-    private fun calculateStatusColor(color: Int,alpha:Int):Int {
+    private fun calculateStatusColor(color: Int, alpha: Int): Int {
         val a = 1 - alpha / 255f
         var red = color shr 16 and 0xff
         var green = color shr 8 and 0xff
@@ -256,33 +310,20 @@ object StatusBarUtil {
             window.insetsController?.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
         } else {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+            window.decorView.systemUiVisibility =
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
         }
         window.statusBarColor = Color.TRANSPARENT
     }
 
-
-    private fun setRootView(activity: Activity) {
-        val rootView = (activity.findViewById<View>(R.id.content) as ViewGroup).getChildAt(0) as ViewGroup
-        ViewCompat.setFitsSystemWindows(rootView,true)
-        rootView.clipToPadding = true
-    }
-
-    private fun createStatusBarView(activity: Activity,color: Int,alpha: Int):StatusBarView {
-        val statusBarView = StatusBarView(activity)
-        val params = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            getStatusBarHeight(activity)
+    class StatusBarView : View {
+        constructor(context: Context?) : super(context)
+        constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+        constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(
+            context,
+            attrs,
+            defStyleAttr
         )
-        statusBarView.layoutParams = params
-        statusBarView.setBackgroundColor(calculateStatusColor(color,alpha))
-        return statusBarView
     }
-
-    class StatusBarView:View {
-        constructor(context: Context?):super(context)
-        constructor(context: Context?, attrs:AttributeSet?):super(context,attrs)
-        constructor(context: Context?,attrs: AttributeSet?,defStyleAttr:Int) : super(context, attrs, defStyleAttr)
-
-        }
 }
