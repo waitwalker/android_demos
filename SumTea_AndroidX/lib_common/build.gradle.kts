@@ -32,6 +32,10 @@ android {
     }
 }
 
+ksp {
+    arg("AROUTER_MODULE_NAME", project.name)
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -40,4 +44,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.arouter.api)
+    ksp(libs.arouter.compiler)
 }
