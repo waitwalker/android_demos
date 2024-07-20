@@ -6,4 +6,11 @@
 </style>
 
 <style name="Theme.SumTea_AndroidX" parent="Base.Theme.SumTea_AndroidX" />
+    <style name="SplashAppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowBackground">@drawable/bg_welcome</item>
+
+    </style>
 </resources>

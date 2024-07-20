@@ -79,11 +79,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(project(":lib_framework"))
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.recyclerview)
-    implementation(project(":lib_starter"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -97,5 +95,10 @@ dependencies {
     implementation(libs.refresh.footer.classics)
     implementation(libs.arouter.api)
     ksp(libs.arouter.compiler)
+
+    implementation(project(":module_main"))
+    implementation(project(":lib_framework"))
+    implementation(project(":lib_starter"))
+
 
 }

@@ -35,14 +35,19 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-    buildFeatures {
-        viewBinding = true
-        dataBinding = true
-    }
+
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+    }
+
+    dataBinding {
+        enable = true
+    }
+
+    viewBinding {
+        enable = true
     }
 }
 
@@ -69,4 +74,6 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(project(":lib_framework"))
+    implementation(libs.arouter.api)
+    ksp(libs.arouter.compiler)
 }

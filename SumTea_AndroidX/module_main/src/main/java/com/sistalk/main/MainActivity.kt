@@ -1,47 +1,15 @@
 package com.sistalk.main
 
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.sistalk.main.ui.theme.SumTea_AndroidXTheme
+import com.alibaba.android.arouter.facade.annotation.Route
+import com.sistalk.common.constant.MAIN_ACTIVITY_HOME
+import com.sistalk.framework.base.BaseDataBindActivity
+import com.sistalk.main.databinding.ActivityMainBinding
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SumTea_AndroidXTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
-        }
-    }
-}
+@Route(path = MAIN_ACTIVITY_HOME)
+class MainActivity : BaseDataBindActivity<ActivityMainBinding>() {
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+    override fun initView(savedInstanceState: Bundle?) {
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SumTea_AndroidXTheme {
-        Greeting("Android")
     }
 }
