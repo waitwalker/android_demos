@@ -3,13 +3,17 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import androidx.multidex.BuildConfig
 import androidx.multidex.MultiDex
+import com.alibaba.android.arouter.launcher.ARouter
+import com.sistalk.framework.helper.SumAppHelper
 import com.sistalk.framework.log.LogUtil
 import com.sistalk.framework.manager.ActivityManager
 import com.sistalk.framework.manager.AppFrontBack
 import com.sistalk.framework.manager.AppFrontBackListener
 import com.sistalk.framework.toast.TipsToast
 import com.sistalk.starter.dispatcher.TaskDispatcher
+import com.sistalk.sumtea_androidx.task.InitARouterTask
 //import com.sistalk.sumtea_androidx.task.InitARouterTask
 import com.sistalk.sumtea_androidx.task.InitAppManagerTask
 import com.sistalk.sumtea_androidx.task.InitMMKVTask
@@ -28,6 +32,12 @@ class SumApplication:Application() {
     override fun onCreate() {
         super.onCreate()
 
+        if (BuildConfig.DEBUG) {
+            ARouter.openLog()
+            ARouter.openDebug()
+        }
+        ARouter.init(this)
+
         // 1.注册app前后台切换监听
         appFrontBackRegister()
         // 2.注册Activity生命周期监听
@@ -42,7 +52,7 @@ class SumApplication:Application() {
             .addTask(InitMMKVTask())
             .addTask(InitAppManagerTask())
             .addTask(InitRefreshLayoutTask())
-//            .addTask(InitARouterTask())
+            .addTask(InitARouterTask())
             .start()
         dispatcher.await()
     }
