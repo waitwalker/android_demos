@@ -1,17 +1,15 @@
 plugins {
-    alias(libs.plugins.android.application)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.jetbrains.kotlin.android)
-    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.kapt)
 }
 
 android {
     namespace = "com.sistalk.main"
-    compileSdk = 34
+    compileSdk = BuildConfig.compileSdk
 
     defaultConfig {
-        minSdk = 24
+        minSdk = BuildConfig.minSdkVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -51,6 +49,10 @@ android {
     }
 }
 
+ksp {
+    arg("AROUTER_MODULE_NAME", project.name)
+}
+
 dependencies {
 
     implementation(libs.androidx.core.ktx)
@@ -65,7 +67,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    implementation(project(":lib_common"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,7 +74,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation(project(":lib_framework"))
     implementation(libs.arouter.api)
     ksp(libs.arouter.compiler)
+
+    implementation(project(":lib_framework"))
+    implementation(project(":lib_common"))
 }
