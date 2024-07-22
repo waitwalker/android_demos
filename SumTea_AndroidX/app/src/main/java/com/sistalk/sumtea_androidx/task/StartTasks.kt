@@ -3,7 +3,6 @@ package com.sistalk.sumtea_androidx.task
 import android.app.Application
 import androidx.multidex.BuildConfig
 import com.alibaba.android.arouter.launcher.ARouter
-//import com.alibaba.android.arouter.launcher.ARouter
 import com.scwang.smart.refresh.footer.ClassicsFooter
 import com.scwang.smart.refresh.header.ClassicsHeader
 import com.scwang.smart.refresh.layout.SmartRefreshLayout
@@ -33,7 +32,7 @@ class InitSumHelperTask(private val application: Application): Task() {
 /**
  * 腾讯开源Key-Value组件
  * */
-class InitMMKVTask():Task() {
+class InitMMKVTask :Task() {
     override fun needWait(): Boolean {
         return true
     }
@@ -41,7 +40,7 @@ class InitMMKVTask():Task() {
     /**
      * 指定依赖，依赖完成后才能执行
      * */
-    override fun dependsOn(): List<Class<out Task?>?>? {
+    override fun dependsOn(): List<Class<out Task?>?> {
         val tasks = mutableListOf<Class<out Task?>>()
         tasks.add(InitSumHelperTask::class.java)
         return tasks
@@ -67,13 +66,13 @@ class InitMMKVTask():Task() {
     }
 }
 
-class InitAppManagerTask():Task() {
+class InitAppManagerTask :Task() {
 
     override fun needWait(): Boolean {
         return true
     }
 
-    override fun dependsOn(): List<Class<out Task?>?>? {
+    override fun dependsOn(): List<Class<out Task?>?> {
         val tasks = mutableListOf<Class<out Task?>>()
         tasks.add(InitSumHelperTask::class.java)
         return tasks
@@ -88,7 +87,7 @@ class InitAppManagerTask():Task() {
 /**
  * 全局刷新配置
  * */
-class InitRefreshLayoutTask():Task() {
+class InitRefreshLayoutTask :Task() {
 
     override fun needWait(): Boolean {
         return true
@@ -99,7 +98,7 @@ class InitRefreshLayoutTask():Task() {
             layout.setPrimaryColorsId(R.color.white)
             ClassicsHeader(context)
         }
-        SmartRefreshLayout.setDefaultRefreshFooterCreator{ context, layout ->
+        SmartRefreshLayout.setDefaultRefreshFooterCreator{ context, _ ->
             ClassicsFooter(context)
         }
     }
@@ -108,12 +107,12 @@ class InitRefreshLayoutTask():Task() {
 /**
  * 初始化路由
  * */
-class InitARouterTask():Task() {
+class InitARouterTask :Task() {
     override fun needWait(): Boolean {
         return false
     }
 
-    override fun dependsOn(): List<Class<out Task?>?>? {
+    override fun dependsOn(): List<Class<out Task?>?> {
         val tasks = mutableListOf<Class<out Task?>>()
         tasks.add(InitSumHelperTask::class.java)
         return tasks

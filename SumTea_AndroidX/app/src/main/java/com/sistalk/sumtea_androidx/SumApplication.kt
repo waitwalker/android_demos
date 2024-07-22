@@ -6,19 +6,24 @@ import android.os.Bundle
 import androidx.multidex.BuildConfig
 import androidx.multidex.MultiDex
 import com.alibaba.android.arouter.launcher.ARouter
+import com.scwang.smart.refresh.footer.ClassicsFooter
+import com.scwang.smart.refresh.header.ClassicsHeader
+import com.scwang.smart.refresh.layout.SmartRefreshLayout
 import com.sistalk.framework.helper.SumAppHelper
 import com.sistalk.framework.log.LogUtil
 import com.sistalk.framework.manager.ActivityManager
 import com.sistalk.framework.manager.AppFrontBack
 import com.sistalk.framework.manager.AppFrontBackListener
+import com.sistalk.framework.manager.AppManager
 import com.sistalk.framework.toast.TipsToast
 import com.sistalk.starter.dispatcher.TaskDispatcher
 import com.sistalk.sumtea_androidx.task.InitARouterTask
-//import com.sistalk.sumtea_androidx.task.InitARouterTask
 import com.sistalk.sumtea_androidx.task.InitAppManagerTask
 import com.sistalk.sumtea_androidx.task.InitMMKVTask
 import com.sistalk.sumtea_androidx.task.InitRefreshLayoutTask
 import com.sistalk.sumtea_androidx.task.InitSumHelperTask
+import com.tencent.mmkv.MMKV
+import com.tencent.mmkv.MMKVLogLevel
 
 
 class SumApplication:Application() {
@@ -32,11 +37,38 @@ class SumApplication:Application() {
     override fun onCreate() {
         super.onCreate()
 
+        /// 初始化 App 辅助类，提供application 对象
+        SumAppHelper.init(this, BuildConfig.DEBUG)
+
+        /// 初始化 路由
         if (BuildConfig.DEBUG) {
             ARouter.openLog()
             ARouter.openDebug()
         }
-        ARouter.init(this)
+        ARouter.init(SumAppHelper.getApplication())
+
+        /// 初始化腾讯MMKV组件（高效Key Value）
+        val rootDir:String = MMKV.initialize(SumAppHelper.getApplication())
+        MMKV.setLogLevel(
+            if (BuildConfig.DEBUG) {
+                MMKVLogLevel.LevelDebug
+            } else {
+                MMKVLogLevel.LevelError
+            }
+        )
+        LogUtil.d("mmkv root:$rootDir", tag = "MMKV")
+
+        /// 初始化App 管理类
+        AppManager.init(SumAppHelper.getApplication())
+
+        /// 初始化 全局下拉刷新 & 上拉加载
+        SmartRefreshLayout.setDefaultRefreshHeaderCreator{ context, layout ->
+            layout.setPrimaryColorsId(R.color.white)
+            ClassicsHeader(context)
+        }
+        SmartRefreshLayout.setDefaultRefreshFooterCreator{ context, _ ->
+            ClassicsFooter(context)
+        }
 
         // 1.注册app前后台切换监听
         appFrontBackRegister()
@@ -46,15 +78,15 @@ class SumApplication:Application() {
         TipsToast.init(this)
 
         // 4.初始化任务调度器
-        TaskDispatcher.init(this)
-        val dispatcher:TaskDispatcher = TaskDispatcher.createInstances()
-        dispatcher.addTask(InitSumHelperTask(this))
-            .addTask(InitMMKVTask())
-            .addTask(InitAppManagerTask())
-            .addTask(InitRefreshLayoutTask())
-            .addTask(InitARouterTask())
-            .start()
-        dispatcher.await()
+//        TaskDispatcher.init(this)
+//        val dispatcher:TaskDispatcher = TaskDispatcher.createInstances()
+//        dispatcher.addTask(InitSumHelperTask(this))
+//            .addTask(InitMMKVTask())
+//            .addTask(InitAppManagerTask())
+//            .addTask(InitRefreshLayoutTask())
+//            .addTask(InitARouterTask())
+//            .start()
+//        dispatcher.await()
     }
 
     /*
