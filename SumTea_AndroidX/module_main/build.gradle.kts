@@ -40,13 +40,14 @@ android {
         }
     }
 
+    viewBinding {
+        enable = true
+    }
+
     dataBinding {
         enable = true
     }
 
-    viewBinding {
-        enable = true
-    }
 }
 
 ksp {
