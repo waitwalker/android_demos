@@ -1,4 +1,5 @@
 package com.sistalk.framework.base
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -21,5 +22,9 @@ abstract class BaseDataBindActivity<DB : ViewBinding> : BaseActivity() {
 
     override fun getLayoutResId(): Int {
         return 0
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
     }
 }
