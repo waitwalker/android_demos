@@ -22,6 +22,7 @@ ksp = "1.9.20-1.0.14"
 activity = "1.9.1"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
+retrofit = "2.11.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -48,6 +49,8 @@ mmkv = { module = "com.tencent:mmkv", version.ref = "mmkv" }
 refresh-footer-classics = { module = "io.github.scwang90:refresh-footer-classics", version.ref = "refresh" }
 refresh-header-classics = { module = "io.github.scwang90:refresh-header-classics", version.ref = "refresh" }
 refresh-layout-kernel = { module = "io.github.scwang90:refresh-layout-kernel", version.ref = "refresh" }
+retrofit2-retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit2-converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 arouter-api = { module = "com.alibaba:arouter-api", version.ref = "arouter" }
 arouter-compiler = { module = "com.github.JailedBird:ArouterKspCompiler", version.ref = "arouterCompler" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }

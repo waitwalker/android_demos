@@ -41,6 +41,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(project(":lib_framework"))
+    implementation(libs.retrofit2.retrofit)
+    implementation(libs.retrofit2.converter.gson)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
