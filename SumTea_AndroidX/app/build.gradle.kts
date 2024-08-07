@@ -1,3 +1,4 @@
+apply(from = "config.gradle.kts")
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -20,7 +21,8 @@ android {
 
     defaultConfig {
         applicationId = BuildConfig.applicationId
-        minSdk = BuildConfig.minSdkVersion
+//        minSdk = BuildConfig.minSdkVersion
+        minSdk = extra["kMinSdkVersion"] as Int
         targetSdk = BuildConfig.targetSdkVersion
         versionCode = BuildConfig.versionCode
         versionName = BuildConfig.versionName
