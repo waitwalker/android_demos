@@ -71,6 +71,11 @@ dependencies {
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
     implementation(project(":network"))
+    implementation(libs.refresh.footer.classics)
+    implementation(libs.refresh.header.classics)
+    implementation(libs.refresh.layout.kernel)
+
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
