@@ -11,9 +11,24 @@ class IndicatorOptions {
     var orientation = IndicatorOrientation.INDICATOR_HORIZONTAL
 
     @AIndicatorStyle
-    var indicatorStyle:Int = 0
+    var indicatorStyle: Int = 0
 
     @AIndicatorSlideMode
-    var slideMode:Int = 0
+    var slideMode: Int = 0
+
+    // 页面size
+    var pageSize: Int = 0
+
+    // 选中时Indicator颜色
+    var checkedSliderColor: Int = 0
+
+    // Indicator间距
+    var sliderGap: Float = 0f
+
+    var sliderHeight: Float = 0f
+        get() = if (field > 0) field else normalSliderWidth / 2
+
+    var normalSliderWidth:Float = 0f
+
 
 }
