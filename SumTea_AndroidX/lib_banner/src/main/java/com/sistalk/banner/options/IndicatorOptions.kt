@@ -25,6 +25,7 @@ class IndicatorOptions {
     // Indicator间距
     var sliderGap: Float = 0f
 
+    // 高度
     var sliderHeight: Float = 0f
         get() = if (field > 0) field else normalSliderWidth / 2
 
