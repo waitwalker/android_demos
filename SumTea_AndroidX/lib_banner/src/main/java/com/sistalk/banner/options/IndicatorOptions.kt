@@ -31,5 +31,19 @@ class IndicatorOptions {
 
     var normalSliderWidth:Float = 0f
 
+    var checkedSliderWidth:Float = 0f
+
+    // 指示器当前位置
+    var currentPosition:Int = 0
+
+    // 从一个点滑动到另一个点的进度
+    var sliderProgress:Float = 0f
+
+    var showIndicatorOneItem:Boolean = false
+
+    init {
+
+    }
+
 
 }
