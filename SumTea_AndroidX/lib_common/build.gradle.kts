@@ -45,6 +45,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.arouter.api)
-    implementation(project(":lib_framework"))
+
     ksp(libs.arouter.compiler)
+    implementation(project(":lib_framework"))
 }
