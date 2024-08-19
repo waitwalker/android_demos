@@ -1,6 +1,7 @@
 package com.sistalk.banner.base
 
 import androidx.recyclerview.widget.RecyclerView
+import com.sistalk.banner.BannerViewPager
 
 abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>() {
     companion object {
@@ -9,7 +10,7 @@ abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>(
 
     protected var mList:MutableList<T> = ArrayList()
     private var isCanLoop = false
-    private var mPageClickListener:BannerViewPager
+    private var mPageClickListener: BannerViewPager.On
 }
 
 
