@@ -22,8 +22,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "SumTea_AndroidX"
 include(":app")
-include(":module_main")
 include(":lib_framework")
+include(":module_main")
 include(":lib_starter")
 include(":lib_common")
 include(":lib_network")

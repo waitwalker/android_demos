@@ -9,7 +9,7 @@ import android.view.animation.RotateAnimation
 import com.sistalk.framework.R
 import com.sistalk.framework.databinding.DialogLoadingBinding
 
-class CenterLoadingView(context: Context, theme: Int) : Dialog(context, R.style.loading_dialog) {
+public class CenterLoadingView(context: Context, theme: Int) : Dialog(context, R.style.loading_dialog) {
     private var mBinding: DialogLoadingBinding
     private var animation:Animation? = null
     init {
