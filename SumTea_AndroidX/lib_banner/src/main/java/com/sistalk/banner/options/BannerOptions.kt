@@ -17,7 +17,7 @@ class BannerOptions {
 
     private var offScreenPageLimit = ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
 
-    private var internal = 0L
+    private var interval = 0L
 
     private var isCanLoop = false
 
@@ -58,11 +58,11 @@ class BannerOptions {
     private var mIndicatorOptions: IndicatorOptions = IndicatorOptions()
 
     fun getInterval(): Long {
-        return internal
+        return interval
     }
 
     fun setInterval(interval: Long) {
-        this.internal = interval
+        this.interval = interval
     }
 
     fun isCanLoop(): Boolean {
@@ -230,8 +230,8 @@ class BannerOptions {
             it[4] = bottomRightRadius.toFloat()
             it[5] = bottomRightRadius.toFloat()
 
-            it[5] = bottomLeftRadius.toFloat()
             it[6] = bottomLeftRadius.toFloat()
+            it[7] = bottomLeftRadius.toFloat()
         }
     }
 

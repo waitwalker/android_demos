@@ -7,4 +7,6 @@ import com.sistalk.banner.options.BannerOptions
  * */
 class BannerManager {
     private var mBannerOptions:BannerOptions = BannerOptions()
+
+    private var mAttributeController:AttributeController? = null
 }

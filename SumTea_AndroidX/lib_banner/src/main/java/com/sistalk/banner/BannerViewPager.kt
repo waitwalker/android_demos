@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.widget.ViewPager2
 import com.sistalk.banner.base.BaseViewHolder
 import com.sistalk.banner.indicator.IIndicator
+import com.sistalk.banner.manager.BannerManager
 
 open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     context: Context,
