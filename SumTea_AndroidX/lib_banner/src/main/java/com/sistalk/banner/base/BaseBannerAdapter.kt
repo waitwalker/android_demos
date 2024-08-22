@@ -7,12 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sistalk.banner.BannerViewPager
 import com.sistalk.banner.utils.BannerUtils
 
-abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>() {
+abstract class BaseBannerAdapter<T, H : BaseViewHolder<T>> : RecyclerView.Adapter<H>() {
     companion object {
         const val MAX_VALUE = Int.MAX_VALUE / 2
     }
 
-    protected var mList:MutableList<T> = ArrayList()
+    protected var mList: MutableList<T> = ArrayList()
     private var isCanLoop = false
 
     private var mPageClickListener: BannerViewPager.OnPageClickListener? = null
@@ -23,21 +23,22 @@ abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>(
         viewHolder.itemView.setOnClickListener { clickedView: View? ->
             val adapterPosition = viewHolder.adapterPosition
             if (mPageClickListener != null && adapterPosition != RecyclerView.NO_POSITION) {
-                val realPosition:Int = BannerUtils.getRealPosition(viewHolder.adapterPosition,getListSize())
-                mPageClickListener?.onPageClick(clickedView,realPosition)
+                val realPosition: Int =
+                    BannerUtils.getRealPosition(viewHolder.adapterPosition, getListSize())
+                mPageClickListener?.onPageClick(clickedView, realPosition)
             }
         }
         return viewHolder
     }
 
     override fun onBindViewHolder(holder: H, position: Int) {
-        val realPosition:Int = BannerUtils.getRealPosition(position,getListSize())
-        onBindView(holder,mList[realPosition],realPosition,getListSize())
+        val realPosition: Int = BannerUtils.getRealPosition(position, getListSize())
+        onBindView(holder, mList[realPosition], realPosition, getListSize())
     }
 
     override fun getItemViewType(position: Int): Int {
-        val realPosition:Int = BannerUtils.getRealPosition(position,getListSize())
-        return getViewType(position)
+        val realPosition: Int = BannerUtils.getRealPosition(position, getListSize())
+        return getViewType(realPosition)
     }
 
     override fun getItemCount(): Int {
@@ -48,7 +49,7 @@ abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>(
         }
     }
 
-    fun getData():MutableList<T> {
+    fun getData(): MutableList<T> {
         return mList
     }
 
@@ -69,7 +70,7 @@ abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>(
         notifyDataSetChanged()
     }
 
-    fun setCanLoop(canLoop:Boolean) {
+    fun setCanLoop(canLoop: Boolean) {
         isCanLoop = canLoop
     }
 
@@ -77,21 +78,21 @@ abstract class BaseBannerAdapter<T,H:BaseViewHolder<T>>:RecyclerView.Adapter<H>(
         mPageClickListener = pageClickListener
     }
 
-    fun getListSize():Int {
+    fun getListSize(): Int {
         return mList.size
     }
 
-    protected fun getViewType(position: Int):Int {
+    protected fun getViewType(position: Int): Int {
         return 0
     }
 
-    fun isCanLoop():Boolean {
+    fun isCanLoop(): Boolean {
         return isCanLoop
     }
 
-    abstract fun onCreateHolder(parent: ViewGroup,viewType: Int):H
+    abstract fun onCreateHolder(parent: ViewGroup, viewType: Int): H
 
-    abstract fun onBindView(holder: H,data:T,position: Int,pageSize:Int)
+    abstract fun onBindView(holder: H, data: T, position: Int, pageSize: Int)
 
 }
 
