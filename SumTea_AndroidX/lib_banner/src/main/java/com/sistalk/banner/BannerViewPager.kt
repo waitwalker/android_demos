@@ -10,7 +10,6 @@ import android.util.Log
 import android.view.View
 import android.widget.RelativeLayout
 import androidx.lifecycle.LifecycleObserver
-import androidx.viewpager.widget.ViewPager.OnPageChangeListener
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
 import com.sistalk.banner.base.BaseBannerAdapter
@@ -19,6 +18,8 @@ import com.sistalk.banner.base.BaseViewHolder
 import com.sistalk.banner.indicator.IIndicator
 import com.sistalk.banner.manager.BannerManager
 import com.sistalk.banner.utils.BannerUtils
+import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
+import com.sistalk.banner.utils.BannerUtils.getRealPosition
 
 open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     context: Context,
@@ -74,10 +75,11 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     }
 
     private fun pageSelected(position: Int) {
-        val size = mBannerPagerAdapter?.getListSize()?:0
+        val size = mBannerPagerAdapter?.getListSize() ?: 0
         val canLoop = mBannerManager.getBannerOptions().isCanLoop()
-        currentPosition = BannerUtils.getRealPosition(position,size)
-        val needResetCurrentItem = (size > 0 && canLoop && (position == 0 || position == MAX_VALUE - 1))
+        currentPosition = BannerUtils.getRealPosition(position, size)
+        val needResetCurrentItem =
+            (size > 0 && canLoop && (position == 0 || position == MAX_VALUE - 1))
         if (needResetCurrentItem) {
 
         }
@@ -92,9 +94,14 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
-    private fun resetCurrentItem(item:Int) {
+    private fun resetCurrentItem(item: Int) {
         if (isCanLoopSafely()) {
-            mViewPager?.setCurrentItem()
+            mViewPager?.setCurrentItem(
+                getOriginalPosition(mBannerPagerAdapter?.getListSize() ?: 0) + item,
+                false
+            )
+        } else {
+            mViewPager?.setCurrentItem(item,false)
         }
     }
 
@@ -106,8 +113,9 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         return mBannerManager.getBannerOptions().isAutoPlay()
     }
 
-    private fun isCanLoopSafely():Boolean {
-        return (mBannerManager.getBannerOptions().isCanLoop() && (mBannerPagerAdapter?.getListSize() ?:0) > 1)
+    private fun isCanLoopSafely(): Boolean {
+        return (mBannerManager.getBannerOptions().isCanLoop() && (mBannerPagerAdapter?.getListSize()
+            ?: 0) > 1)
     }
 
 
