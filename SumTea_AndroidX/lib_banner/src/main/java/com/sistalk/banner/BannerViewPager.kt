@@ -21,6 +21,8 @@ import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
 import com.sistalk.banner.base.BaseViewHolder
 import com.sistalk.banner.indicator.IIndicator
 import com.sistalk.banner.manager.BannerManager
+import com.sistalk.banner.options.BannerOptions
+import com.sistalk.banner.options.IndicatorOptions
 import com.sistalk.banner.utils.BannerUtils
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
@@ -265,6 +267,42 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    private fun handlePosition() {
+        if ((mBannerPagerAdapter != null) && ((mBannerPagerAdapter?.getListSize()
+                ?: 0) > 1) && isAutoPlay()
+        ) {
+            var currentItem = (mViewPager?.currentItem ?: 0) + 1
+            if (currentItem >= (mViewPager?.adapter?.itemCount ?: MAX_VALUE)) {
+                currentItem = 0
+            }
+            mViewPager?.currentItem = currentItem
+            mHandler.postDelayed(mRunnable, getInterval())
+        }
+    }
+
+    private fun initBannerData(isInitCurrent:Boolean = true) {
+        val list:List<T>? = mBannerPagerAdapter?.getData()
+        if (list != null) {
+            setIndicatorValues(list)
+            setupViewPager(list,isInitCurrent)
+            initRoundCorner()
+        }
+    }
+
+    private fun setIndicatorValues(list: List<T>) {
+        val bannerOptions:BannerOptions = mBannerManager.getBannerOptions()
+        mIndicatorLayout?.visibility = bannerOptions.getIndicatorVisibility()
+        bannerOptions.resetIndicatorOptions()
+        if (!isCustomIndicator || mIndicatorView == null) {
+            mIndicatorView = IndicatorView(context)
+        }
+        initIndicator(bannerOptions.getIndicatorOptions(),list)
+    }
+
+    private fun initIndicator(indicatorOptions: IndicatorOptions,list: List<T>) {
+
+    }
+
     private fun resetCurrentItem(item: Int) {
         if (isCanLoopSafely()) {
             mViewPager?.setCurrentItem(
@@ -312,19 +350,6 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
-
-    private fun handlePosition() {
-        if ((mBannerPagerAdapter != null) && ((mBannerPagerAdapter?.getListSize()
-                ?: 0) > 1) && isAutoPlay()
-        ) {
-            var currentItem = (mViewPager?.currentItem ?: 0) + 1
-            if (currentItem >= (mViewPager?.adapter?.itemCount ?: MAX_VALUE)) {
-                currentItem = 0
-            }
-            mViewPager?.currentItem = currentItem
-            mHandler.postDelayed(mRunnable, getInterval())
-        }
-    }
 
 
     interface OnPageClickListener {
