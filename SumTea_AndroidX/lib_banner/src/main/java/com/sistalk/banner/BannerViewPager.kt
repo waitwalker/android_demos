@@ -74,6 +74,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    // 选中
     private fun pageSelected(position: Int) {
         val size = mBannerPagerAdapter?.getListSize() ?: 0
         val canLoop = mBannerManager.getBannerOptions().isCanLoop()
