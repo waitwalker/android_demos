@@ -2,13 +2,17 @@ package com.sistalk.banner
 
 import android.content.Context
 import android.graphics.Path
+import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
 import android.util.Log
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleObserver
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
@@ -20,6 +24,7 @@ import com.sistalk.banner.manager.BannerManager
 import com.sistalk.banner.utils.BannerUtils
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
+import kotlin.math.abs
 
 open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     context: Context,
@@ -67,28 +72,193 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
 
         override fun onPageSelected(position: Int) {
             super.onPageSelected(position)
+            if (getGlobalVisibleRect(Rect()) && windowVisibility == View.VISIBLE) {
+                pageSelected(position)
+            }
         }
 
         override fun onPageScrollStateChanged(state: Int) {
             super.onPageScrollStateChanged(state)
+            pageScrollStateChanged(state)
         }
+    }
+
+    init {
+        mBannerManager.initAttrs(context, attrs)
+        initView()
+    }
+
+    private fun initView() {
+        mViewPager = ViewPager2(context).apply {
+            getChildAt(0).apply {
+                clipToPadding = parentClipToPadding()
+                clipChildren = parentClipToPadding()
+            }
+        }
+
+        addView(
+            mViewPager, ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+
+        mIndicatorLayout = RelativeLayout(context)
+
+        addView(
+            mIndicatorLayout,
+            LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            ).apply {
+                addRule(ALIGN_PARENT_BOTTOM)
+            }
+        )
+
+        mViewPager?.setPageTransformer(mBannerManager.getCompositePageTransformer())
+        clipChildren = parentClipToPadding()
+        clipToPadding = parentClipToPadding()
+    }
+
+    /// 被父视图移除
+    override fun onDetachedFromWindow() {
+        if (mBannerManager.getBannerOptions().isStopLoopWhenDetachedFromWindow()) {
+            stopLoop()
+        }
+        super.onDetachedFromWindow()
+        if (context is AppCompatActivity) {
+            (context as AppCompatActivity).lifecycle.removeObserver(this)
+        }
+    }
+
+    /// 被添加到父视图上
+    override fun onAttachedToWindow() {
+        super.onAttachedToWindow()
+        if (mBannerManager.getBannerOptions().isStopLoopWhenDetachedFromWindow()) {
+            startLoop()
+        }
+        if (context is AppCompatActivity) {
+            (context as AppCompatActivity).lifecycle.addObserver(this)
+        }
+    }
+
+    /// 事件分发
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        when (ev?.action) {
+            MotionEvent.ACTION_DOWN -> {
+                isLooping = true
+                stopLoop()
+            }
+
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_OUTSIDE -> {
+                isLooping = false
+                startLoop()
+            }
+
+            else -> {
+
+            }
+        }
+        return super.dispatchTouchEvent(ev)
+    }
+
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        val doNotNeedIntercept =
+            (mViewPager?.isUserInputEnabled != true || (mBannerPagerAdapter != null && (mBannerPagerAdapter?.getData()?.size
+                ?: 0) <= 1))
+        if (doNotNeedIntercept) {
+            return super.onInterceptTouchEvent(ev)
+        }
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                startX = ev.x.toInt()
+                startY = ev.y.toInt()
+                parent.requestDisallowInterceptTouchEvent(
+                    !mBannerManager.getBannerOptions().isDisallowParentInterceptDownEvent()
+                )
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                val endX = ev.x.toInt()
+                val endY = ev.y.toInt()
+                val disX = abs(endX - startX)
+                val disY: Int = abs(endY - startY)
+                val orientation: Int = mBannerManager.getBannerOptions().getOrientation()
+                if (orientation == ViewPager2.ORIENTATION_VERTICAL) {
+                    onVerticalActionMove(endY, disX, disY)
+                } else if (orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
+                    onHorizontalActionMove(endX, disX, disY)
+                }
+            }
+
+            MotionEvent.ACTION_UP,MotionEvent.ACTION_CANCEL->parent.requestDisallowInterceptTouchEvent(false)
+            MotionEvent.ACTION_OUTSIDE->{}
+            else -> {}
+        }
+
+        return super.onInterceptTouchEvent(ev)
+    }
+
+    private fun onVerticalActionMove(endY:Int, disX:Int, disY:Int) {
+        if (disY > disX) {
+            val canLoop:Boolean = mBannerManager.getBannerOptions().isCanLoop()
+            if (!canLoop) {
+                if (currentPosition == 0 && endY -startY > 0) {
+                    parent.requestDisallowInterceptTouchEvent(false)
+                } else {
+                    parent.requestDisallowInterceptTouchEvent(
+                        currentPosition != getData().size - 1 || endY -startY >= 0
+                    )
+                }
+            } else {
+                parent.requestDisallowInterceptTouchEvent(true)
+            }
+        } else if (disX > disY) {
+            parent.requestDisallowInterceptTouchEvent(false)
+        }
+    }
+
+    private fun onHorizontalActionMove(endX:Int, disX: Int, disY: Int) {
+        if (disX > disY) {
+            val canLoop = mBannerManager.getBannerOptions().isCanLoop()
+            if (!canLoop) {
+                if (currentPosition == 0 && endX - startX > 0) {
+                    parent.requestDisallowInterceptTouchEvent(false)
+                } else {
+                    parent.requestDisallowInterceptTouchEvent(
+                        (currentPosition != getData().size -1) || endX - startX >= 0
+                    )
+                }
+            } else {
+                parent.requestDisallowInterceptTouchEvent(true)
+            }
+        } else if (disY > disX) {
+            parent.requestDisallowInterceptTouchEvent(false)
+        }
+    }
+
+    private fun pageScrollStateChanged(state: Int) {
+        mIndicatorView?.onPageScrollStateChanged(state)
+        onPageChangeCallback?.onPageScrollStateChanged(state)
     }
 
     // 选中
     private fun pageSelected(position: Int) {
         val size = mBannerPagerAdapter?.getListSize() ?: 0
         val canLoop = mBannerManager.getBannerOptions().isCanLoop()
-        currentPosition = BannerUtils.getRealPosition(position, size)
+        currentPosition = getRealPosition(position, size)
         val needResetCurrentItem =
             (size > 0 && canLoop && (position == 0 || position == MAX_VALUE - 1))
         if (needResetCurrentItem) {
-
+            resetCurrentItem(currentPosition)
         }
+        onPageChangeCallback?.onPageSelected(currentPosition)
+        mIndicatorView?.onPageSelected(currentPosition)
     }
 
     private fun pageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
         val listSize = mBannerPagerAdapter?.getListSize() ?: 0
-        val realPosition = BannerUtils.getRealPosition(position, listSize)
+        val realPosition = getRealPosition(position, listSize)
         if (listSize > 0) {
             onPageChangeCallback?.onPageScrolled(realPosition, positionOffset, positionOffsetPixels)
             mIndicatorView?.onPageScrolled(realPosition, positionOffset, positionOffsetPixels)
@@ -102,7 +272,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
                 false
             )
         } else {
-            mViewPager?.setCurrentItem(item,false)
+            mViewPager?.setCurrentItem(item, false)
         }
     }
 
@@ -117,6 +287,29 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     private fun isCanLoopSafely(): Boolean {
         return (mBannerManager.getBannerOptions().isCanLoop() && (mBannerPagerAdapter?.getListSize()
             ?: 0) > 1)
+    }
+
+    open fun parentClipToPadding(): Boolean = true
+
+    fun getData():List<T> {
+        return mBannerPagerAdapter?.getData() ?: emptyList()
+    }
+
+    fun startLoop() {
+        if (!isLooping && isAutoPlay() && (mBannerPagerAdapter != null) && (mBannerPagerAdapter?.getListSize()
+                ?: 0) > 1
+        ) {
+            mHandler.postDelayed(mRunnable, getInterval())
+            isLooping = true
+        }
+    }
+
+
+    fun stopLoop() {
+        if (isLooping) {
+            mHandler.removeCallbacks(mRunnable)
+            isLooping = false
+        }
     }
 
 
