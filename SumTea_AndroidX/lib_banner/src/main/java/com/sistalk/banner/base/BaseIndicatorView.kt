@@ -135,23 +135,23 @@ open class BaseIndicatorView(
         return mIndicatorOptions.currentPosition
     }
 
-    fun getIndicatorGap():Float {
+    fun getIndicatorGap(): Float {
         return mIndicatorOptions.sliderGap
     }
 
-    fun setIndicatorGap(indicatorGap:Float) {
+    fun setIndicatorGap(indicatorGap: Float) {
         mIndicatorOptions.sliderGap = indicatorGap
     }
 
-    fun setCheckedColor(@ColorInt checkedColor:Int) {
+    fun setCheckedColor(@ColorInt checkedColor: Int) {
         mIndicatorOptions.checkedSliderColor = checkedColor
     }
 
-    fun getCheckedColor():Int {
+    fun getCheckedColor(): Int {
         return mIndicatorOptions.checkedSliderColor
     }
 
-    fun setNormalColor(@ColorInt normalColor:Int) {
+    fun setNormalColor(@ColorInt normalColor: Int) {
         mIndicatorOptions.normalSliderColor = normalColor
     }
 
@@ -172,22 +172,22 @@ open class BaseIndicatorView(
         return this
     }
 
-    fun setSliderColor(@ColorInt normalColor: Int, @ColorInt checkedColor: Int):BaseIndicatorView {
-        mIndicatorOptions.setSliderColor(normalColor,checkedColor)
+    fun setSliderColor(@ColorInt normalColor: Int, @ColorInt checkedColor: Int): BaseIndicatorView {
+        mIndicatorOptions.setSliderColor(normalColor, checkedColor)
         return this
     }
 
-    fun setSliderWidth(sliderWidth:Float):BaseIndicatorView {
+    fun setSliderWidth(sliderWidth: Float): BaseIndicatorView {
         mIndicatorOptions.setSliderWidth(sliderWidth)
         return this
     }
 
-    fun setSliderWidth(normalSlideWidth: Float,selectedSliderWidth:Float):BaseIndicatorView {
-        mIndicatorOptions.setSliderWidth(normalSlideWidth,selectedSliderWidth)
+    fun setSliderWidth(normalSlideWidth: Float, selectedSliderWidth: Float): BaseIndicatorView {
+        mIndicatorOptions.setSliderWidth(normalSlideWidth, selectedSliderWidth)
         return this
     }
 
-    fun setSlideGap(sliderGap:Float):BaseIndicatorView {
+    fun setSlideGap(sliderGap: Float): BaseIndicatorView {
         mIndicatorOptions.sliderGap = sliderGap
         return this
     }
@@ -201,12 +201,12 @@ open class BaseIndicatorView(
         return this
     }
 
-    fun setIndicatorStyle(@AIndicatorStyle indicatorStyle: Int):BaseIndicatorView {
+    fun setIndicatorStyle(@AIndicatorStyle indicatorStyle: Int): BaseIndicatorView {
         mIndicatorOptions.indicatorStyle = indicatorStyle
         return this
     }
 
-    fun setSliderHeight(sliderHeight:Float):BaseIndicatorView {
+    fun setSliderHeight(sliderHeight: Float): BaseIndicatorView {
         mIndicatorOptions.sliderHeight = sliderHeight
         return this
     }
@@ -221,14 +221,15 @@ open class BaseIndicatorView(
         notifyDataChanged()
     }
 
+    fun showIndicatorWhenOneItem(showIndicatorWhenOneItem: Boolean) {
+        mIndicatorOptions.showIndicatorOneItem = showIndicatorWhenOneItem
+    }
+
     override fun onPageScrollStateChanged(state: Int) {
 
     }
 
-
-    override fun setIndicatorOptions(options:IndicatorOptions) {
-
+    override fun setIndicatorOptions(options: IndicatorOptions) {
+        mIndicatorOptions = options
     }
-
-
 }
