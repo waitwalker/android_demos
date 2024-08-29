@@ -61,6 +61,9 @@ abstract class BaseDrawer internal constructor(internal var mIndicatorOptions: I
         return ((pageSize - 1) * indicatorGap + maxWidth + (pageSize - 1) * minWidth).toInt() + INDICATOR_PADDING_ADDITION
     }
 
+    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+
+    }
 
     inner class MeasureResult {
         var measureWidth: Int = 0

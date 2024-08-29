@@ -7,7 +7,6 @@ import com.sistalk.banner.base.BaseDrawer
 import com.sistalk.banner.mode.IndicatorSlideMode
 import com.sistalk.banner.options.IndicatorOptions
 import com.sistalk.banner.utils.IndicatorUtils
-import kotlin.math.min
 
 open class RectDrawer internal constructor(indicatorOptions: IndicatorOptions) :
     BaseDrawer(indicatorOptions) {
@@ -141,18 +140,18 @@ open class RectDrawer internal constructor(indicatorOptions: IndicatorOptions) :
             mPaint.color =
                 if ((i == mIndicatorOptions.currentPosition)) mIndicatorOptions.checkedSliderColor
                 else mIndicatorOptions.normalSliderColor
-            mRectF.set(left,0f,left + sliderWidth, mIndicatorOptions.sliderHeight)
-            drawRoundRect(canvas,mIndicatorOptions.sliderHeight,mIndicatorOptions.sliderHeight)
+            mRectF.set(left, 0f, left + sliderWidth, mIndicatorOptions.sliderHeight)
+            drawRoundRect(canvas, mIndicatorOptions.sliderHeight, mIndicatorOptions.sliderHeight)
             left += sliderWidth + mIndicatorOptions.sliderGap
         }
     }
 
     private fun drawCheckedSlider(canvas: Canvas) {
         mPaint.color = mIndicatorOptions.checkedSliderColor
-        when(mIndicatorOptions.slideMode) {
-            IndicatorSlideMode.SMOOTH->drawSmoothSldier(canvas)
-            IndicatorSlideMode.WORM ->drawWormSlider(canvas)
-            IndicatorSlideMode.COLOR->drawColorSlider(canvas)
+        when (mIndicatorOptions.slideMode) {
+            IndicatorSlideMode.SMOOTH -> drawSmoothSlider(canvas)
+            IndicatorSlideMode.WORM -> drawWormSlider(canvas)
+            IndicatorSlideMode.COLOR -> drawColorSlider(canvas)
         }
     }
 
@@ -162,21 +161,30 @@ open class RectDrawer internal constructor(indicatorOptions: IndicatorOptions) :
         val slideProgress = mIndicatorOptions.sliderProgress
         val left = currentPosition * minWidth + currentPosition * mIndicatorOptions.sliderGap
         if (slideProgress < 0.99) {
-            val evaluate = argbEvaluator?.evaluate(slideProgress,mIndicatorOptions.checkedSliderColor,mIndicatorOptions.normalSliderColor)
+            val evaluate = argbEvaluator?.evaluate(
+                slideProgress,
+                mIndicatorOptions.checkedSliderColor,
+                mIndicatorOptions.normalSliderColor
+            )
             mPaint.color = (evaluate as Int)
-            mRectF.set(left,0f,left + minWidth, mIndicatorOptions.sliderHeight)
-            drawRoundRect(canvas,mIndicatorOptions.sliderHeight,mIndicatorOptions.sliderHeight)
+            mRectF.set(left, 0f, left + minWidth, mIndicatorOptions.sliderHeight)
+            drawRoundRect(canvas, mIndicatorOptions.sliderHeight, mIndicatorOptions.sliderHeight)
         }
 
-        var nextSliderLeft = left + mIndicatorOptions.sliderGap + mIndicatorOptions.normalSliderWidth
+        var nextSliderLeft =
+            left + mIndicatorOptions.sliderGap + mIndicatorOptions.normalSliderWidth
         if (currentPosition == mIndicatorOptions.pageSize - 1) {
             nextSliderLeft = 0f
         }
 
-        val evaluate = argbEvaluator?.evaluate(1-slideProgress,mIndicatorOptions.checkedSliderColor,mIndicatorOptions.normalSliderColor)
+        val evaluate = argbEvaluator?.evaluate(
+            1 - slideProgress,
+            mIndicatorOptions.checkedSliderColor,
+            mIndicatorOptions.normalSliderColor
+        )
         mPaint.color = evaluate as Int
-        mRectF.set(nextSliderLeft,0f,nextSliderLeft + minWidth, mIndicatorOptions.sliderHeight)
-        drawRoundRect(canvas,mIndicatorOptions.sliderHeight, mIndicatorOptions.sliderHeight)
+        mRectF.set(nextSliderLeft, 0f, nextSliderLeft + minWidth, mIndicatorOptions.sliderHeight)
+        drawRoundRect(canvas, mIndicatorOptions.sliderHeight, mIndicatorOptions.sliderHeight)
     }
 
     private fun drawWormSlider(canvas: Canvas) {
@@ -184,15 +192,30 @@ open class RectDrawer internal constructor(indicatorOptions: IndicatorOptions) :
         val sliderProgress = mIndicatorOptions.sliderProgress
         val currentPosition = mIndicatorOptions.currentPosition
         val distance = mIndicatorOptions.sliderGap + mIndicatorOptions.normalSliderWidth
-        val startCoordinateX = IndicatorUtils.getCoordinateX(mIndicatorOptions,maxWidth,currentPosition)
-        val left = startCoordinateX + (distance * (sliderProgress - 0.5f))
+        val startCoordinateX =
+            IndicatorUtils.getCoordinateX(mIndicatorOptions, maxWidth, currentPosition)
+        val left =
+            startCoordinateX + (distance * (sliderProgress - 0.5f) * 2.0f).coerceAtLeast(0f) -
+                    mIndicatorOptions.normalSliderWidth / 2
+        val right = startCoordinateX + (distance * sliderProgress * 2f).coerceAtLeast(distance) +
+                mIndicatorOptions.normalSliderWidth / 2
+        mRectF.set(left, 0f, right, sliderHeight)
+        drawRoundRect(canvas, sliderHeight, sliderHeight)
     }
 
-    protected open fun drawRoundRect(canvas: Canvas,rx:Float,ry:Float) {
+    private fun drawSmoothSlider(canvas: Canvas) {
+        val currentPosition = mIndicatorOptions.currentPosition
+        val indicatorGap = mIndicatorOptions.sliderGap
+        val sliderHeight = mIndicatorOptions.sliderHeight
+        val left =
+            currentPosition * maxWidth + currentPosition * indicatorGap + (maxWidth + indicatorGap) * mIndicatorOptions.sliderProgress
+        mRectF.set(left, 0f, left + maxWidth, sliderHeight)
+        drawRoundRect(canvas, sliderHeight, sliderHeight)
+    }
+
+    protected open fun drawRoundRect(canvas: Canvas, rx: Float, ry: Float) {
         drawDash(canvas)
     }
 
     protected open fun drawDash(canvas: Canvas) {}
-
-
 }

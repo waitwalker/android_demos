@@ -7,7 +7,9 @@ internal object DrawerFactory {
 
     fun createDrawer(indicatorOptions: IndicatorOptions):IDrawer {
         return when(indicatorOptions.indicatorStyle) {
-            IndicatorStyle.DASH->
+            IndicatorStyle.DASH->DashDrawer(indicatorOptions)
+            IndicatorStyle.ROUND_RECT->RoundRectDrawer(indicatorOptions)
+            else->CircleDrawer(indicatorOptions)
         }
     }
 }
