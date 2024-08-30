@@ -99,7 +99,7 @@ class CircleDrawer internal constructor(indicatorOptions: IndicatorOptions) :
             )
             mPaint.color = evaluate as Int
             val nextCoordinateX = maxWidth / 2
-            val nextRadius = maxWidth / 2 + (maxWidth / 2 - minWidth / 2) * slideProgress
+            val nextRadius = minWidth / 2 + (maxWidth / 2 - minWidth / 2) * slideProgress
             drawCircle(canvas, nextCoordinateX, coordinateY, nextRadius)
         } else {
             if (slideProgress > 0) {
