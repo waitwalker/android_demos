@@ -38,8 +38,33 @@ class DrawableIndicator @JvmOverloads constructor(
                 var left: Int
                 var top: Int
                 var bitmap = mNormalBitmap
-                var index =
+                val index = i - 1
+                when {
+                    index < getCurrentPosition() -> {
+                        left = (i - 1) * (mNormalBitmapWidth + mIndicatorPadding)
+                        top = measuredHeight / 2 - mNormalBitmapHeight / 2
+                    }
+
+                    index == getCurrentPosition() -> {
+                        left = (i - 1) * (mNormalBitmapWidth + mIndicatorPadding)
+                        top = measuredHeight / 2 - mCheckedBitmapHeight / 2
+                        bitmap = mCheckedBitmap
+                    }
+
+                    else -> {
+                        left =
+                            (i - 1) * mIndicatorPadding * (i - 2) * mNormalBitmapWidth + mCheckedBitmapWidth
+                        top = measuredHeight / 2 - mNormalBitmapHeight / 2
+                    }
+                }
+                drawIcon(canvas, left, top, bitmap)
             }
+        }
+    }
+
+    private fun drawIcon(canvas: Canvas, left: Int, top: Int, icon: Bitmap?) {
+        if (icon != null) {
+            canvas.drawBitmap(icon, left.toFloat(), top.toFloat(), null)
         }
     }
 }
