@@ -13,18 +13,25 @@ import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleObserver
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import androidx.viewpager2.widget.ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.sistalk.banner.annotation.APageStyle
 import com.sistalk.banner.base.BaseBannerAdapter
 import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
+import com.sistalk.banner.options.BannerOptions.Companion.DEFAULT_REVEAL_WIDTH
 import com.sistalk.banner.base.BaseViewHolder
 import com.sistalk.banner.indicator.IIndicator
 import com.sistalk.banner.indicator.IndicatorView
 import com.sistalk.banner.manager.BannerManager
+import com.sistalk.banner.manager.ReflectLayoutManager
+import com.sistalk.banner.mode.PageStyle
 import com.sistalk.banner.options.BannerOptions
 import com.sistalk.banner.options.IndicatorOptions
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
+import com.sistalk.framework.utils.ViewUtils
 import kotlin.math.abs
 
 open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
@@ -192,23 +199,26 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
                 }
             }
 
-            MotionEvent.ACTION_UP,MotionEvent.ACTION_CANCEL->parent.requestDisallowInterceptTouchEvent(false)
-            MotionEvent.ACTION_OUTSIDE->{}
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> parent.requestDisallowInterceptTouchEvent(
+                false
+            )
+
+            MotionEvent.ACTION_OUTSIDE -> {}
             else -> {}
         }
 
         return super.onInterceptTouchEvent(ev)
     }
 
-    private fun onVerticalActionMove(endY:Int, disX:Int, disY:Int) {
+    private fun onVerticalActionMove(endY: Int, disX: Int, disY: Int) {
         if (disY > disX) {
-            val canLoop:Boolean = mBannerManager.getBannerOptions().isCanLoop()
+            val canLoop: Boolean = mBannerManager.getBannerOptions().isCanLoop()
             if (!canLoop) {
-                if (currentPosition == 0 && endY -startY > 0) {
+                if (currentPosition == 0 && endY - startY > 0) {
                     parent.requestDisallowInterceptTouchEvent(false)
                 } else {
                     parent.requestDisallowInterceptTouchEvent(
-                        currentPosition != getData().size - 1 || endY -startY >= 0
+                        currentPosition != getData().size - 1 || endY - startY >= 0
                     )
                 }
             } else {
@@ -219,7 +229,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
-    private fun onHorizontalActionMove(endX:Int, disX: Int, disY: Int) {
+    private fun onHorizontalActionMove(endX: Int, disX: Int, disY: Int) {
         if (disX > disY) {
             val canLoop = mBannerManager.getBannerOptions().isCanLoop()
             if (!canLoop) {
@@ -227,7 +237,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
                     parent.requestDisallowInterceptTouchEvent(false)
                 } else {
                     parent.requestDisallowInterceptTouchEvent(
-                        (currentPosition != getData().size -1) || endX - startX >= 0
+                        (currentPosition != getData().size - 1) || endX - startX >= 0
                     )
                 }
             } else {
@@ -279,11 +289,11 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
-    private fun initBannerData(isInitCurrent:Boolean = true) {
-        val list:List<T>? = mBannerPagerAdapter?.getData()
+    private fun initBannerData(isInitCurrent: Boolean = true) {
+        val list: List<T>? = mBannerPagerAdapter?.getData()
         if (list != null) {
             setIndicatorValues(list)
-            setupViewPager(list,isInitCurrent)
+            setupViewPager(list, isInitCurrent)
             initRoundCorner()
         }
     }
@@ -291,21 +301,82 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     private fun initRoundCorner() {
         val roundCorner = mBannerManager.getBannerOptions().getRoundRectRadius()
         if (roundCorner > 0) {
-            ViewUtils.setClipViewCornerRadius(this,roundCorner)
+            ViewUtils.setClipViewCornerRadius(this, roundCorner)
+        }
+    }
+
+    private fun setupViewPager(list: List<T>, isInitCurrent: Boolean = true) {
+        if (mBannerPagerAdapter == null) {
+            throw NullPointerException("You must set adapter for BannerViewPager")
+        }
+        val bannerOptions = mBannerManager.getBannerOptions()
+        if (bannerOptions.getScrollDuration() != 0) {
+            mViewPager?.let {
+                ReflectLayoutManager.reflectLayoutManager(it, bannerOptions.getScrollDuration())
+            }
+        }
+
+        mBannerPagerAdapter?.setCanLoop(bannerOptions.isCanLoop())
+        mBannerPagerAdapter?.setPageClickListener(mOnPageClickListener)
+        mViewPager?.adapter = mBannerPagerAdapter
+        if (isCanLoopSafely()) {
+            mViewPager?.setCurrentItem(getOriginalPosition(list.size) + currentPosition, false)
+        }
+        mViewPager?.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        mViewPager?.unregisterOnPageChangeCallback(mOnPageChangeCallback)
+        mViewPager?.orientation = bannerOptions.getOrientation()
+        val limit = bannerOptions.getOffScreenPageLimit()
+        mViewPager?.offscreenPageLimit = if (limit > 0) limit else OFFSCREEN_PAGE_LIMIT_DEFAULT
+        initRevealWidth(bannerOptions)
+        initPageStyle(bannerOptions.getPageStyle())
+        stopLoop()
+        startLoop()
+    }
+
+    private fun initRevealWidth(bannerOptions: BannerOptions) {
+        val rightRevealWidth = bannerOptions.getRightRevealWidth()
+        val leftRevealWidth = bannerOptions.getLeftRevealWidth()
+        if (leftRevealWidth != DEFAULT_REVEAL_WIDTH || rightRevealWidth != DEFAULT_REVEAL_WIDTH) {
+            val recyclerView = mViewPager?.getChildAt(0)
+            if (recyclerView is RecyclerView) {
+                val orientation = bannerOptions.getOrientation()
+                val padding2 = bannerOptions.getPageMargin() + rightRevealWidth
+                val padding1 = bannerOptions.getPageMargin() + leftRevealWidth
+                if (orientation == ViewPager2.ORIENTATION_HORIZONTAL) {
+                    recyclerView.setPadding(padding1, 0, padding2, 0)
+                } else if (orientation == ViewPager2.ORIENTATION_VERTICAL) {
+                    recyclerView.setPadding(0, padding1, 0, padding2)
+                }
+                recyclerView.clipToPadding = false
+            }
+        }
+        mBannerManager.createMarginTransformer()
+    }
+
+    fun refreshRevealWidth() {
+        initRevealWidth(mBannerManager.getBannerOptions())
+    }
+
+    private fun initPageStyle(@APageStyle pageStyle: Int) {
+        val pageScale = mBannerManager.getBannerOptions().getPageScale()
+        if (pageStyle == PageStyle.MULTI_PAGE_OVERLAP) {
+            mBannerManager.setMultiPageStyle(true, pageScale)
+        } else if (pageStyle == PageStyle.MULTI_PAGE_SCALE) {
+            mBannerManager.setMultiPageStyle(false, pageScale)
         }
     }
 
     private fun setIndicatorValues(list: List<T>) {
-        val bannerOptions:BannerOptions = mBannerManager.getBannerOptions()
+        val bannerOptions: BannerOptions = mBannerManager.getBannerOptions()
         mIndicatorLayout?.visibility = bannerOptions.getIndicatorVisibility()
         bannerOptions.resetIndicatorOptions()
         if (!isCustomIndicator || mIndicatorView == null) {
             mIndicatorView = IndicatorView(context)
         }
-        initIndicator(bannerOptions.getIndicatorOptions(),list)
+        initIndicator(bannerOptions.getIndicatorOptions(), list)
     }
 
-    private fun initIndicator(indicatorOptions: IndicatorOptions,list: List<T>) {
+    private fun initIndicator(indicatorOptions: IndicatorOptions, list: List<T>) {
 
     }
 
@@ -335,7 +406,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
 
     open fun parentClipToPadding(): Boolean = true
 
-    fun getData():List<T> {
+    fun getData(): List<T> {
         return mBannerPagerAdapter?.getData() ?: emptyList()
     }
 
@@ -355,7 +426,6 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
             isLooping = false
         }
     }
-
 
 
     interface OnPageClickListener {
