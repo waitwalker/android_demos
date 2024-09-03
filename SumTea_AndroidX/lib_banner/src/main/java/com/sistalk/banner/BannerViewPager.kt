@@ -7,7 +7,6 @@ import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -20,10 +19,10 @@ import com.sistalk.banner.base.BaseBannerAdapter
 import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
 import com.sistalk.banner.base.BaseViewHolder
 import com.sistalk.banner.indicator.IIndicator
+import com.sistalk.banner.indicator.IndicatorView
 import com.sistalk.banner.manager.BannerManager
 import com.sistalk.banner.options.BannerOptions
 import com.sistalk.banner.options.IndicatorOptions
-import com.sistalk.banner.utils.BannerUtils
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
 import kotlin.math.abs
@@ -286,6 +285,13 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
             setIndicatorValues(list)
             setupViewPager(list,isInitCurrent)
             initRoundCorner()
+        }
+    }
+
+    private fun initRoundCorner() {
+        val roundCorner = mBannerManager.getBannerOptions().getRoundRectRadius()
+        if (roundCorner > 0) {
+            ViewUtils.setClipViewCornerRadius(this,roundCorner)
         }
     }
 
