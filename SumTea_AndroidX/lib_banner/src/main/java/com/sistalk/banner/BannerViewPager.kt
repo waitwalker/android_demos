@@ -1,12 +1,17 @@
 package com.sistalk.banner
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Canvas
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
 import android.os.Handler
 import android.os.Looper
 import android.util.AttributeSet
+import android.view.Gravity.CENTER
+import android.view.Gravity.END
+import android.view.Gravity.START
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +27,7 @@ import com.sistalk.banner.base.BaseBannerAdapter
 import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
 import com.sistalk.banner.options.BannerOptions.Companion.DEFAULT_REVEAL_WIDTH
 import com.sistalk.banner.base.BaseViewHolder
+import com.sistalk.banner.drawer.RoundRectDrawer
 import com.sistalk.banner.indicator.IIndicator
 import com.sistalk.banner.indicator.IndicatorView
 import com.sistalk.banner.manager.BannerManager
@@ -29,6 +35,7 @@ import com.sistalk.banner.manager.ReflectLayoutManager
 import com.sistalk.banner.mode.PageStyle
 import com.sistalk.banner.options.BannerOptions
 import com.sistalk.banner.options.IndicatorOptions
+import com.sistalk.banner.utils.BannerUtils
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
 import com.sistalk.framework.utils.ViewUtils
@@ -298,6 +305,65 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    private fun setIndicatorValues(list: List<T>) {
+        val bannerOptions: BannerOptions = mBannerManager.getBannerOptions()
+        mIndicatorLayout?.visibility = bannerOptions.getIndicatorVisibility()
+        bannerOptions.resetIndicatorOptions()
+        if (!isCustomIndicator || mIndicatorView == null) {
+            mIndicatorView = IndicatorView(context)
+        }
+        initIndicator(bannerOptions.getIndicatorOptions(), list)
+    }
+
+    private fun initIndicator(indicatorOptions: IndicatorOptions, list: List<T>) {
+        if ((mIndicatorView is View) && (mIndicatorView as View?)?.parent == null) {
+            mIndicatorLayout?.removeAllViews()
+            mIndicatorLayout?.addView(mIndicatorView as View?)
+            initIndicatorSliderMargin()
+            initIndicatorGravity()
+        }
+        mIndicatorView?.setIndicatorOptions(indicatorOptions)
+        indicatorOptions.pageSize = list.size
+        mIndicatorView?.notifyDataChanged()
+    }
+
+    private fun initIndicatorGravity() {
+        val layoutParams = (mIndicatorView as View?)?.layoutParams as LayoutParams
+        when (mBannerManager.getBannerOptions().getIndicatorGravity()) {
+            CENTER -> layoutParams.addRule(CENTER_HORIZONTAL)
+            START -> layoutParams.addRule(ALIGN_PARENT_LEFT)
+            END -> layoutParams.addRule(ALIGN_PARENT_RIGHT)
+            else -> {}
+        }
+    }
+
+    private fun initIndicatorSliderMargin() {
+        val layoutParams = (mIndicatorView as View?)?.layoutParams as MarginLayoutParams
+        val indicatorMargin = mBannerManager.getBannerOptions().getIndicatorMargin()
+        if (indicatorMargin == null) {
+            val dp10: Int = BannerUtils.dp2px(10f)
+            layoutParams.setMargins(dp10, dp10, dp10, dp10)
+        } else {
+            layoutParams.setMargins(
+                indicatorMargin.left,
+                indicatorMargin.top,
+                indicatorMargin.right,
+                indicatorMargin.bottom
+            )
+        }
+    }
+
+    override fun dispatchDraw(canvas: Canvas) {
+        val roundRectRadiusArray:FloatArray? = mBannerManager.getBannerOptions().getRoundRectRadiusArray()
+        if (mRadiusRectF != null && mRadiusPath != null && roundRectRadiusArray != null) {
+            mRadiusRectF?.right = this.width.toFloat()
+            mRadiusRectF?.bottom = this.height.toFloat()
+            mRadiusPath?.addRoundRect(mRadiusRectF!!,roundRectRadiusArray,Path.Direction.CW)
+            canvas.clipPath(mRadiusPath!!)
+        }
+        super.dispatchDraw(canvas)
+    }
+
     private fun initRoundCorner() {
         val roundCorner = mBannerManager.getBannerOptions().getRoundRectRadius()
         if (roundCorner > 0) {
@@ -305,6 +371,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    @SuppressLint("WrongConstant")
     private fun setupViewPager(list: List<T>, isInitCurrent: Boolean = true) {
         if (mBannerPagerAdapter == null) {
             throw NullPointerException("You must set adapter for BannerViewPager")
@@ -366,30 +433,29 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
-    private fun setIndicatorValues(list: List<T>) {
-        val bannerOptions: BannerOptions = mBannerManager.getBannerOptions()
-        mIndicatorLayout?.visibility = bannerOptions.getIndicatorVisibility()
-        bannerOptions.resetIndicatorOptions()
-        if (!isCustomIndicator || mIndicatorView == null) {
-            mIndicatorView = IndicatorView(context)
-        }
-        initIndicator(bannerOptions.getIndicatorOptions(), list)
-    }
-
-    private fun initIndicator(indicatorOptions: IndicatorOptions, list: List<T>) {
-
-    }
-
     private fun resetCurrentItem(item: Int) {
         if (isCanLoopSafely()) {
             mViewPager?.setCurrentItem(
-                getOriginalPosition(mBannerPagerAdapter?.getListSize() ?: 0) + item,
-                false
+                getOriginalPosition(
+                    mBannerPagerAdapter?.getListSize() ?: 0
+                ) + item, false
             )
         } else {
             mViewPager?.setCurrentItem(item, false)
         }
     }
+
+    private fun refreshIndicator(data: List<T>) {
+        setIndicatorValues(data)
+        mBannerManager.getBannerOptions().getIndicatorOptions().currentPosition =
+            getRealPosition(mViewPager?.currentItem ?: 0, data.size)
+        mIndicatorView?.notifyDataChanged()
+    }
+
+    private val KEY_SUPER_STATE = "SUPER_STATE"
+    private val KEY_CURRENT_POSITION = "CURRENT_POSITION"
+    private val KEY_IS_CUSTOM_INDICATOR = "IS_CUSTOM_INDICATOR"
+
 
     private fun getInterval(): Long {
         return mBannerManager.getBannerOptions().getInterval()
