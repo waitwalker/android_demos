@@ -6,8 +6,10 @@ import android.graphics.Canvas
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.RectF
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.os.Parcelable
 import android.util.AttributeSet
 import android.view.Gravity.CENTER
 import android.view.Gravity.END
@@ -16,13 +18,23 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
+import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.ItemDecoration
+import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import androidx.viewpager2.widget.ViewPager2
 import androidx.viewpager2.widget.ViewPager2.OFFSCREEN_PAGE_LIMIT_DEFAULT
 import androidx.viewpager2.widget.ViewPager2.OnPageChangeCallback
+import com.sistalk.banner.annotation.AIndicatorGravity
+import com.sistalk.banner.annotation.AIndicatorSlideMode
+import com.sistalk.banner.annotation.AIndicatorStyle
 import com.sistalk.banner.annotation.APageStyle
+import com.sistalk.banner.annotation.Visibility
 import com.sistalk.banner.base.BaseBannerAdapter
 import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
 import com.sistalk.banner.options.BannerOptions.Companion.DEFAULT_REVEAL_WIDTH
@@ -35,6 +47,7 @@ import com.sistalk.banner.manager.ReflectLayoutManager
 import com.sistalk.banner.mode.PageStyle
 import com.sistalk.banner.options.BannerOptions
 import com.sistalk.banner.options.IndicatorOptions
+import com.sistalk.banner.transform.ScaleInTransformer.Companion.DEFAULT_MIN_SCALE
 import com.sistalk.banner.utils.BannerUtils
 import com.sistalk.banner.utils.BannerUtils.getOriginalPosition
 import com.sistalk.banner.utils.BannerUtils.getRealPosition
@@ -471,6 +484,24 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
             ?: 0) > 1)
     }
 
+    override fun onSaveInstanceState(): Parcelable? {
+        val superState = super.onSaveInstanceState()
+        val bundle = Bundle()
+        bundle.putParcelable(KEY_SUPER_STATE, superState)
+        bundle.putInt(KEY_CURRENT_POSITION, currentPosition)
+        bundle.putBoolean(KEY_IS_CUSTOM_INDICATOR, isCustomIndicator)
+        return bundle
+    }
+
+    override fun onRestoreInstanceState(state: Parcelable?) {
+        val bundle = state as Bundle
+        val superState = bundle.getParcelable<Parcelable>(KEY_SUPER_STATE)
+        super.onRestoreInstanceState(superState)
+        currentPosition = bundle.getInt(KEY_CURRENT_POSITION)
+        isCustomIndicator = bundle.getBoolean(KEY_IS_CUSTOM_INDICATOR)
+        setCurrentItem(currentPosition, false)
+    }
+
     open fun parentClipToPadding(): Boolean = true
 
     fun getData(): List<T> {
@@ -486,6 +517,14 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    fun startLoopNow() {
+        if (!isLooping && isAutoPlay() && mBannerPagerAdapter != null && (mBannerPagerAdapter?.getListSize()
+                ?: 0) > 1
+        ) {
+            mHandler.post(mRunnable)
+            isLooping = true
+        }
+    }
 
     fun stopLoop() {
         if (isLooping) {
@@ -494,10 +533,349 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         }
     }
 
+    fun setAdapter(adapter: BaseBannerAdapter<T, H>): BannerViewPager<T, H> {
+        mBannerPagerAdapter = adapter
+        return this
+    }
+
+    fun getAdapter(): BaseBannerAdapter<T, H>? {
+        return mBannerPagerAdapter
+    }
+
+    fun setRoundCorner(radius: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setRoundRectRadius(radius)
+        return this
+    }
+
+    fun setRoundCorner(
+        topLeftRadius: Int,
+        topRightRadius: Int,
+        bottomLeftRadius: Int,
+        bottomRightRadius: Int
+    ): BannerViewPager<T, H> {
+        mRadiusRectF = RectF()
+        mRadiusPath = Path()
+        mBannerManager.getBannerOptions()
+            .setRoundRectRadius(topLeftRadius, topRightRadius, bottomLeftRadius, bottomRightRadius)
+        return this
+    }
+
+    fun setCanLoop(canLoop: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setCanLoop(canLoop)
+        if (!canLoop) {
+            mBannerManager.getBannerOptions().setAutoPlay(false)
+        }
+        return this
+    }
+
+    fun setInterval(interval: Long): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setInterval(interval)
+        return this
+    }
+
+    fun setPageTransformer(transformer: ViewPager2.PageTransformer?): BannerViewPager<T, H> {
+        if (transformer != null) {
+            mViewPager?.setPageTransformer(transformer)
+        }
+        return this
+    }
+
+    fun addPageTransformer(transformer: ViewPager2.PageTransformer?): BannerViewPager<T, H> {
+        if (transformer != null) {
+            mBannerManager.addTransformer(transformer)
+        }
+        return this
+    }
+
+    fun removeTransformer(transformer: ViewPager2.PageTransformer?) {
+        if (transformer != null) {
+            mBannerManager.removeTransformer(transformer)
+        }
+    }
+
+    fun removeDefaultPageTransformer() {
+        mBannerManager.removeDefaultPageTransformer()
+    }
+
+    fun removeMarginPageTransformer() {
+        mBannerManager.removeMarginPageTransformer()
+    }
+
+    fun setPageMargin(pageMargin: Int): BannerViewPager<T, H> {
+        mBannerManager.setPageMargin(pageMargin)
+        return this
+    }
+
+    fun setOnPageClickListener(onPageClickListener: OnPageClickListener?): BannerViewPager<T, H> {
+        mOnPageClickListener = onPageClickListener
+        return this
+    }
+
+    fun setScrollDuration(scrollDuration: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setScrollDuration(scrollDuration)
+        return this
+    }
+
+    fun setIndicatorSlideColor(
+        @ColorInt normalColor: Int,
+        @ColorInt checkedColor: Int
+    ): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorSliderColor(normalColor, checkedColor)
+        return this
+    }
+
+    fun setIndicatorSliderRadius(radius: Int): BannerViewPager<T, H> {
+        setIndicatorSliderRadius(radius, radius)
+        return this
+    }
+
+    fun setIndicatorSliderRadius(normalRadius: Int, checkedRadius: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions()
+            .setIndicatorSliderWidth(normalRadius * 2, checkedRadius * 2)
+        return this
+    }
+
+    fun setIndicatorSliderWidth(indicatorWidth: Int): BannerViewPager<T, H> {
+        setIndicatorSliderWidth(indicatorWidth, indicatorWidth)
+        return this
+    }
+
+    fun setIndicatorSliderWidth(normalWidth: Int, checkedWidth: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorSliderWidth(normalWidth, checkedWidth)
+        return this
+    }
+
+    fun setIndicatorHeight(indicatorHeight: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorHeight(indicatorHeight)
+        return this
+    }
+
+    fun setIndicatorSliderGap(indicatorGap: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorGap(indicatorGap.toFloat())
+        return this
+    }
+
+    fun setIndicatorVisibility(@Visibility visibility: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorVisibility(visibility)
+        return this
+    }
+
+    fun setIndicatorGravity(@AIndicatorGravity gravity: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorGravity(gravity)
+        return this
+    }
+
+    fun setIndicatorSlideMode(@AIndicatorSlideMode slideMode: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorSlideMode(slideMode)
+        return this
+    }
+
+    fun setIndicatorView(customIndicator: IIndicator?): BannerViewPager<T, H> {
+        if (customIndicator is View) {
+            isCustomIndicator = true
+            mIndicatorView = customIndicator
+        }
+        return this
+    }
+
+    fun setIndicatorStyle(@AIndicatorStyle indicatorStyle: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorStyle(indicatorStyle)
+        return this
+    }
+
+    fun create(data: List<T>?, isInitCurrent: Boolean = true) {
+        if (mBannerPagerAdapter == null) {
+            throw NullPointerException("You must set adapter for BannerViewPager")
+        }
+        mBannerPagerAdapter?.setData(data)
+        initBannerData(isInitCurrent)
+    }
+
+    fun create() {
+        create(ArrayList())
+    }
+
+    fun setOrientation(@ViewPager2.Orientation orientation: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setOrientation(orientation)
+        return this
+    }
+
+    fun addItemDecoration(decor: ItemDecoration, index: Int) {
+        if (isCanLoopSafely()) {
+            val pageSize = mBannerPagerAdapter?.getListSize() ?: 0
+            val currentItem = mViewPager?.currentItem ?: 0
+            val realPosition = BannerUtils.getRealPosition(currentItem, pageSize)
+            if (currentItem != index) {
+                if (index == 0 && realPosition == pageSize - 1) {
+                    mViewPager?.addItemDecoration(decor, currentItem + 1)
+                } else if (realPosition == 0 && index == pageSize - 1) {
+                    mViewPager?.addItemDecoration(decor, currentItem - 1)
+                } else {
+                    mViewPager?.addItemDecoration(decor, currentItem + index - realPosition)
+                }
+            }
+        } else {
+            mViewPager?.addItemDecoration(decor, index)
+        }
+    }
+
+    fun addItemDecoration(decor: ItemDecoration) {
+        mViewPager?.addItemDecoration(decor)
+    }
+
+    fun refreshData(list: List<T>?) {
+        post {
+            if (isAttachedToWindow && list != null && mBannerPagerAdapter != null) {
+                stopLoop()
+                mBannerPagerAdapter?.setData(list)
+                val limitSize = mBannerManager.getBannerOptions().getOffScreenPageLimit()
+                mViewPager?.offscreenPageLimit =
+                    if (limitSize > 0) limitSize else OFFSCREEN_PAGE_LIMIT_DEFAULT
+                resetCurrentItem(getCurrentItem())
+                refreshIndicator(list)
+                startLoop()
+            }
+        }
+    }
+
+    fun getCurrentItem(): Int {
+        return currentPosition
+    }
+
+    fun setCurrentItem(item: Int) {
+        setCurrentItem(item, true)
+    }
+
+    fun setCurrentItem(item: Int, smoothScroll: Boolean) {
+        var item = item
+        if (isCanLoopSafely()) {
+            val pageSize = mBannerPagerAdapter?.getListSize() ?: 0
+            item = if (item >= pageSize) pageSize - 1 else item
+            val currentItem = mViewPager?.currentItem ?: 0
+            mBannerManager.getBannerOptions().isCanLoop()
+            val realPosition = BannerUtils.getRealPosition(currentPosition, pageSize)
+            if (currentItem != item) {
+                stopLoop()
+                if (item == 0 && realPosition == pageSize - 1) {
+                    mViewPager?.setCurrentItem(currentItem + 1, smoothScroll)
+                } else if (realPosition == 0 && item == pageSize - 1) {
+                    mViewPager?.setCurrentItem(currentItem - 1, smoothScroll)
+                } else {
+                    mViewPager?.setCurrentItem(currentItem + (item - realPosition), smoothScroll)
+                }
+                stopLoop()
+            }
+        } else {
+            mViewPager?.setCurrentItem(item, smoothScroll)
+        }
+    }
+
+    fun setPageStyle(@APageStyle pageStyle: Int): BannerViewPager<T, H> {
+        setPageStyle(pageStyle, DEFAULT_MIN_SCALE)
+        return this
+    }
+
+    fun setPageStyle(@APageStyle pageStyle: Int, pageScale: Float): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setPageStyle(pageStyle)
+        mBannerManager.getBannerOptions().setPageScale(pageScale)
+        return this
+    }
+
+    fun setRevealWidth(revealWidth: Int): BannerViewPager<T, H> {
+        setRevealWidth(revealWidth, revealWidth)
+        return this
+    }
+
+    fun setRevealWidth(leftRevealWidth: Int, rightRevealWidth: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setRightRevealWidth(rightRevealWidth)
+        mBannerManager.getBannerOptions().setLeftRevealWidth(leftRevealWidth)
+        return this
+    }
+
+    fun setOffScreenPageLimit(offScreenPageLimit: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setOffScreenPageLimit(offScreenPageLimit)
+        return this
+    }
+
+    fun setIndicatorMargin(left: Int, top: Int, right: Int, bottom: Int): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setIndicatorMargin(left, top, right, bottom)
+        return this
+    }
+
+    fun setUserInputEnabled(userInputEnabled: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setUserInputEnabled(userInputEnabled)
+        return this
+    }
 
     interface OnPageClickListener {
         fun onPageClick(clickedView: View?, position: Int)
     }
 
+    fun registerOnPageChangeCallBack(onPageChangeCallBack: OnPageChangeCallback?): BannerViewPager<T, H> {
+        this.onPageChangeCallback = onPageChangeCallBack
+        return this
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+    fun onPause() {
+        stopLoop()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+    fun onResume() {
+        startLoopNow()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
+        stopLoop()
+    }
+
+    fun disallowParentInterceptDownEvent(disallowParentInterceptDownEvent: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions()
+            .setDisallowParentInterceptDownEvent(disallowParentInterceptDownEvent)
+        return this
+    }
+
+    fun setRTLMode(rtlMode: Boolean): BannerViewPager<T, H> {
+        mViewPager?.layoutDirection = if (rtlMode) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
+        mBannerManager.getBannerOptions().setRtl(rtlMode)
+        return this
+    }
+
+    fun stopLoopWhenDetachedFromWindow(stopLoopWhenDetachedFromWindow: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions()
+            .setStopLoopWhenDetachedFromWindow(stopLoopWhenDetachedFromWindow)
+        return this
+    }
+
+    fun showIndicatorWhenOneItem(showIndicatorWhenOneItem: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().showIndicatorWhenOneItem(showIndicatorWhenOneItem)
+        return this
+    }
+
+    @Deprecated("deprecated")
+    fun disallowInterceptTouchEvent(disallowIntercept: Boolean): BannerViewPager<T, H> {
+        mBannerManager.getBannerOptions().setDisallowParentInterceptDownEvent(disallowIntercept)
+        return this
+    }
+
+    fun getCurrentViewHolder(): ViewHolder? {
+        mViewPager?.let {
+            if (it.childCount > 0) {
+                val view = it[0]
+                if (view is RecyclerView) {
+                    return view.findViewHolderForAdapterPosition(it.currentItem)
+                }
+            }
+        }
+        return null
+    }
+
+
+    fun setCurrentPosition(position: Int): BannerViewPager<T, H> {
+        currentPosition = position
+        return this
+    }
 }
 
