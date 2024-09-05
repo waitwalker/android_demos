@@ -354,11 +354,12 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     }
 
     override fun dispatchDraw(canvas: Canvas) {
-        val roundRectRadiusArray:FloatArray? = mBannerManager.getBannerOptions().getRoundRectRadiusArray()
+        val roundRectRadiusArray: FloatArray? =
+            mBannerManager.getBannerOptions().getRoundRectRadiusArray()
         if (mRadiusRectF != null && mRadiusPath != null && roundRectRadiusArray != null) {
             mRadiusRectF?.right = this.width.toFloat()
             mRadiusRectF?.bottom = this.height.toFloat()
-            mRadiusPath?.addRoundRect(mRadiusRectF!!,roundRectRadiusArray,Path.Direction.CW)
+            mRadiusPath?.addRoundRect(mRadiusRectF!!, roundRectRadiusArray, Path.Direction.CW)
             canvas.clipPath(mRadiusPath!!)
         }
         super.dispatchDraw(canvas)
