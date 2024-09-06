@@ -21,9 +21,8 @@ import android.widget.RelativeLayout
 import androidx.annotation.ColorInt
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.get
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -39,7 +38,6 @@ import com.sistalk.banner.base.BaseBannerAdapter
 import com.sistalk.banner.base.BaseBannerAdapter.Companion.MAX_VALUE
 import com.sistalk.banner.options.BannerOptions.Companion.DEFAULT_REVEAL_WIDTH
 import com.sistalk.banner.base.BaseViewHolder
-import com.sistalk.banner.drawer.RoundRectDrawer
 import com.sistalk.banner.indicator.IIndicator
 import com.sistalk.banner.indicator.IndicatorView
 import com.sistalk.banner.manager.BannerManager
@@ -57,7 +55,7 @@ import kotlin.math.abs
 open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
-) : RelativeLayout(context, attrs), LifecycleObserver {
+) : RelativeLayout(context, attrs), DefaultLifecycleObserver {
     private var currentPosition = 0
 
     private var isCustomIndicator = false
@@ -395,6 +393,10 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
             mViewPager?.let {
                 ReflectLayoutManager.reflectLayoutManager(it, bannerOptions.getScrollDuration())
             }
+        }
+
+        if (isInitCurrent) {
+            currentPosition = 0
         }
 
         mBannerPagerAdapter?.setCanLoop(bannerOptions.isCanLoop())
@@ -816,21 +818,20 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         return this
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPause() {
+    override fun onPause(owner: LifecycleOwner) {
+        super.onPause(owner)
         stopLoop()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
+    override fun onResume(owner: LifecycleOwner) {
+        super.onResume(owner)
         startLoopNow()
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
+    override fun onDestroy(owner: LifecycleOwner) {
+        super.onDestroy(owner)
         stopLoop()
     }
-
     fun disallowParentInterceptDownEvent(disallowParentInterceptDownEvent: Boolean): BannerViewPager<T, H> {
         mBannerManager.getBannerOptions()
             .setDisallowParentInterceptDownEvent(disallowParentInterceptDownEvent)
