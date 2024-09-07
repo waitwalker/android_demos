@@ -21,8 +21,8 @@ android {
 
     defaultConfig {
         applicationId = BuildConfig.applicationId
-//        minSdk = BuildConfig.minSdkVersion
-        minSdk = extra["kMinSdkVersion"] as Int
+        minSdk = BuildConfig.minSdkVersion
+//        minSdk = extra["kMinSdkVersion"] as Int
         targetSdk = BuildConfig.targetSdkVersion
         versionCode = BuildConfig.versionCode
         versionName = BuildConfig.versionName
