@@ -74,6 +74,7 @@ dependencies {
     implementation(libs.refresh.footer.classics)
     implementation(libs.refresh.header.classics)
     implementation(libs.refresh.layout.kernel)
+    implementation(project(":lib_banner"))
 
 
     testImplementation(libs.junit)
