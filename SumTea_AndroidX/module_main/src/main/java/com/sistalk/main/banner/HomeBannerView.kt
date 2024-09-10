@@ -11,4 +11,9 @@ class HomeBannerView @JvmOverloads constructor(
     attrs:AttributeSet? = null,
 ): BannerViewPager<Banner, BannerImageHolder>(context,attrs) {
     val mAdapter = HomeBannerAdapter()
+
+    init {
+        setAdapter(mAdapter)
+            .setAutoPlay(true)
+    }
 }

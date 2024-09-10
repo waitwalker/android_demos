@@ -74,9 +74,7 @@ object ActivityManager {
     * */
     fun isActivityDestroy(context: Context) : Boolean {
         val activity = findActivity(context)
-        return if (activity != null) {
-            activity.isFinishing
-        } else true
+        return activity?.isFinishing ?: true
     }
 
     private fun findActivity(context: Context):Activity? {
