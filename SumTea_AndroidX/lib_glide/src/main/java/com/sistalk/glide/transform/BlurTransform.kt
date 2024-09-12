@@ -7,6 +7,8 @@ import android.graphics.Paint
 import android.renderscript.RSRuntimeException
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
+import com.sistalk.glide.blur.FastBlur
+import com.sistalk.glide.blur.RSBlur
 import java.security.MessageDigest
 
 class BlurTransform @JvmOverloads constructor(
