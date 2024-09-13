@@ -164,9 +164,7 @@ fun ImageView.setScanImage(url: String?) {
                 setImageDrawable(resource)
             }
 
-            override fun onLoadCleared(placeholder: Drawable?) {
-
-            }
+            override fun onLoadCleared(placeholder: Drawable?) {}
 
         })
 }
