@@ -201,7 +201,6 @@ public class FastBlur {
                 rinsum -= sir[0];
                 ginsum -= sir[1];
                 binsum -= sir[2];
-
                 yi += w;
             }
         }
