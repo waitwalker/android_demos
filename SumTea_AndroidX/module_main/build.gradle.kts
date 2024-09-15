@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.refresh.header.classics)
     implementation(libs.refresh.layout.kernel)
     implementation(project(":lib_banner"))
+    implementation(project(":lib_glide"))
 
 
     testImplementation(libs.junit)
