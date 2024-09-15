@@ -9,13 +9,16 @@ import com.sistalk.common.holder.BannerImageHolder
 import com.sistalk.common.model.Banner
 import com.sistalk.glide.setUrl
 
-class HomeBannerAdapter:BaseBannerAdapter<Banner,BannerImageHolder>() {
+class HomeBannerAdapter : BaseBannerAdapter<Banner, BannerImageHolder>() {
     var isRecord = false
-    var onFirstFrameTimeCall:(()->UInt)? = null
+    var onFirstFrameTimeCall: (() -> UInt)? = null
     override fun onCreateHolder(parent: ViewGroup, viewType: Int): BannerImageHolder {
         val imageView = AppCompatImageView(parent.context).apply {
             scaleType = ImageView.ScaleType.CENTER_CROP
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.MATCH_PARENT)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
         }
         return BannerImageHolder(imageView)
     }
@@ -27,7 +30,8 @@ class HomeBannerAdapter:BaseBannerAdapter<Banner,BannerImageHolder>() {
         if (position == 0 && !isRecord) {
             isRecord = true
 
-            holder.imageView.viewTreeObserver.addOnPreDrawListener(object :ViewTreeObserver.OnPreDrawListener {
+            holder.imageView.viewTreeObserver.addOnPreDrawListener(object :
+                ViewTreeObserver.OnPreDrawListener {
                 override fun onPreDraw(): Boolean {
                     onFirstFrameTimeCall?.invoke()
                     holder.itemView.viewTreeObserver.removeOnPreDrawListener(this)

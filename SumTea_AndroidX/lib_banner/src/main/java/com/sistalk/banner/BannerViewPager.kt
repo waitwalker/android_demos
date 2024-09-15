@@ -562,6 +562,14 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         return this
     }
 
+    fun setAutoPlay(autoPlay:Boolean):BannerViewPager<T,H> {
+        mBannerManager.getBannerOptions().setAutoPlay(autoPlay)
+        if (isAutoPlay()) {
+            mBannerManager.getBannerOptions().setCanLoop(true)
+        }
+        return this
+    }
+
     fun setCanLoop(canLoop: Boolean): BannerViewPager<T, H> {
         mBannerManager.getBannerOptions().setCanLoop(canLoop)
         if (!canLoop) {
