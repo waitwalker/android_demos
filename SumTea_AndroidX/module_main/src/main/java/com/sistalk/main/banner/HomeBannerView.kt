@@ -37,7 +37,6 @@ class HomeBannerView @JvmOverloads constructor(
                     )
                 }
             }
-
         })
     }
 
