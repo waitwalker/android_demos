@@ -11,8 +11,10 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener
 import com.sistalk.common.model.ProjectTabItem
+import com.sistalk.common.provider.SearchServiceProvider
 import com.sistalk.framework.adapter.ViewPage2FragmentAdapter
 import com.sistalk.framework.base.BaseMVVMFragment
+import com.sistalk.framework.ext.onClick
 import com.sistalk.main.R
 import com.sistalk.main.databinding.FragmentHomeBinding
 import com.sistalk.main.ui.home.viewmodel.HomeViewModel
@@ -33,11 +35,17 @@ class HomeFragment : BaseMVVMFragment<FragmentHomeBinding,HomeViewModel>(),OnRef
             setOnRefreshListener(this@HomeFragment)
         }
 
-        mBinding?.iv
+        mBinding?.ivSearch?.onClick {
+            SearchServiceProvider.toSearch(requireContext())
+        }
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
         TODO("Not yet implemented")
+    }
+
+    private fun initTab() {
+        mArrayTabFragments.append(0,HomeVideoFragment)
     }
 
 }
