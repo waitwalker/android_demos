@@ -33,7 +33,7 @@ class HomeFragment : BaseMVVMFragment<FragmentHomeBinding,HomeViewModel>(),OnRef
             setOnRefreshListener(this@HomeFragment)
         }
 
-        mBinding?.ivSearch?.
+        mBinding?.iv
     }
 
     override fun onRefresh(refreshLayout: RefreshLayout) {
