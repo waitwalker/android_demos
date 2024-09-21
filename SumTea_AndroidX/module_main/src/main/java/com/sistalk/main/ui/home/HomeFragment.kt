@@ -19,13 +19,13 @@ import com.sistalk.main.R
 import com.sistalk.main.databinding.FragmentHomeBinding
 import com.sistalk.main.ui.home.viewmodel.HomeViewModel
 
-class HomeFragment : BaseMVVMFragment<FragmentHomeBinding,HomeViewModel>(),OnRefreshListener {
+class HomeFragment : BaseMVVMFragment<FragmentHomeBinding, HomeViewModel>(), OnRefreshListener {
 
     private val mArrayTabFragments = SparseArray<Fragment>()
 
-    private var mTabLayoutMediator:TabLayoutMediator? = null
+    private var mTabLayoutMediator: TabLayoutMediator? = null
     private var mFragmentAdapter: ViewPage2FragmentAdapter? = null
-    private var mProjectTabs:MutableList<ProjectTabItem> = mutableListOf()
+    private var mProjectTabs: MutableList<ProjectTabItem> = mutableListOf()
 
     override fun initView(view: View, savedInstanceState: Bundle?) {
         mBinding?.refreshLayout?.apply {
@@ -45,7 +45,7 @@ class HomeFragment : BaseMVVMFragment<FragmentHomeBinding,HomeViewModel>(),OnRef
     }
 
     private fun initTab() {
-        mArrayTabFragments.append(0,HomeVideoFragment)
+        mArrayTabFragments.append(0, HomeVideoFragment)
     }
 
 }
