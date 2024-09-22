@@ -4,7 +4,6 @@ import android.content.Context
 import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.launcher.ARouter
 import com.sistalk.common.service.ISearchService
-
 /**
  * 搜索服务类，对话提供相应的能力
  * */
