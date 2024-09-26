@@ -51,12 +51,12 @@ class EmptyDataView @JvmOverloads constructor(
         }
     }
 
-    fun setBgColor(color: Int):EmptyDataView {
+    fun setBgColor(color: Int): EmptyDataView {
         setBackgroundColor(color)
         return this
     }
 
-    fun setImageResource(resId:Int):EmptyDataView {
+    fun setImageResource(resId: Int): EmptyDataView {
         if (resId == 0) {
             mBinding?.tvNoData?.visibility = GONE
             return this
@@ -66,7 +66,7 @@ class EmptyDataView @JvmOverloads constructor(
         return this
     }
 
-    fun setText(string: String?):EmptyDataView {
+    fun setText(string: String?): EmptyDataView {
         mBinding?.tvNoData?.text = string
         return this
     }
