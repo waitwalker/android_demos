@@ -562,7 +562,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         return this
     }
 
-    fun setAutoPlay(autoPlay:Boolean):BannerViewPager<T,H> {
+    fun setAutoPlay(autoPlay: Boolean): BannerViewPager<T, H> {
         mBannerManager.getBannerOptions().setAutoPlay(autoPlay)
         if (isAutoPlay()) {
             mBannerManager.getBannerOptions().setCanLoop(true)
@@ -840,6 +840,7 @@ open class BannerViewPager<T, H : BaseViewHolder<T>> @JvmOverloads constructor(
         super.onDestroy(owner)
         stopLoop()
     }
+
     fun disallowParentInterceptDownEvent(disallowParentInterceptDownEvent: Boolean): BannerViewPager<T, H> {
         mBannerManager.getBannerOptions()
             .setDisallowParentInterceptDownEvent(disallowParentInterceptDownEvent)
