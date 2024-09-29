@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import com.sistalk.common.R
 import com.sistalk.common.databinding.ViewEmptyDataBinding
 
+/// 占位页面
 class EmptyDataView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
