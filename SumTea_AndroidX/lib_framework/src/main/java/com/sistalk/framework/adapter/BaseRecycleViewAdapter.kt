@@ -30,7 +30,8 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
     var onItemClickListener: ((view: View, position: Int) -> Unit)? = null
 
     /// 长按监听
-    private var onItemLongClickListener: ((view: View, position: Int) -> Boolean) = {_,_ ->false}
+    private var onItemLongClickListener: ((view: View, position: Int) -> Boolean) =
+        { _, _ -> false }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val baseViewHolder: BaseViewHolder
@@ -62,9 +63,11 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
 
     override fun onBindViewHolder(holder: BaseViewHolder, position: Int) {
         when (holder.itemViewType) {
-            HEADER_VIEW, FOOTER_VIEW-> {
+            HEADER_VIEW, FOOTER_VIEW -> {
                 return
-            } else-> {
+            }
+
+            else -> {
                 if (holder is BaseBindViewHolder<*>) {
                     holder as BaseBindViewHolder<B>
                     val realPosition = position - headerLayoutCount
@@ -102,7 +105,11 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
     }
 
     /// 绑定数据
-    protected abstract fun onBindDefViewHolder(holder: BaseBindViewHolder<B>,item:T?,position: Int)
+    protected abstract fun onBindDefViewHolder(
+        holder: BaseBindViewHolder<B>,
+        item: T?,
+        position: Int
+    )
 
     override fun getItemViewType(position: Int): Int {
         return if (hasHeaderView() && position == headerLayoutCount) {
@@ -123,11 +130,11 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
         return headerLayoutCount + getDefItemCount() + footerLayoutCount
     }
 
-    protected open fun getDefItemCount():Int {
+    protected open fun getDefItemCount(): Int {
         return data.size
     }
 
-    protected open fun getDefItemViewType(position: Int):Int {
+    protected open fun getDefItemViewType(position: Int): Int {
         return super.getItemViewType(position)
     }
 
@@ -141,7 +148,7 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
 
     abstract fun getViewBinding(layoutInflater: LayoutInflater, parent: ViewGroup, viewType: Int): B
 
-    fun addHeadView(view: View,index:Int = -1):Int {
+    fun addHeadView(view: View, index: Int = -1): Int {
         if (!this::mHeaderLayout.isInitialized) {
             mHeaderLayout = LinearLayout(view.context)
             mHeaderLayout.orientation = LinearLayout.VERTICAL
@@ -153,14 +160,14 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
         if (index < 0 || index > childCount) {
             mIndex = childCount
         }
-        mHeaderLayout.addView(view,mIndex)
+        mHeaderLayout.addView(view, mIndex)
         if (mHeaderLayout.childCount == 1) {
             notifyItemInserted(headerViewPosition)
         }
         return mIndex
     }
 
-    val headerViewPosition:Int = 0
+    val headerViewPosition: Int = 0
 
     fun hasHeaderView(): Boolean {
         return this::mHeaderLayout.isInitialized && mHeaderLayout.childCount > 0
@@ -175,14 +182,14 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
             }
         }
 
-    fun hasFooterView():Boolean {
+    fun hasFooterView(): Boolean {
         return this::mFooterLayout.isInitialized && mFooterLayout.childCount > 0
     }
 
-    val footerViewPosition:Int
+    val footerViewPosition: Int
         get() = headerLayoutCount + data.size
 
-    val footerLayoutCount:Int
+    val footerLayoutCount: Int
         get() {
             return if (hasFooterView()) {
                 1
@@ -191,7 +198,7 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
             }
         }
 
-    val footerViewCount:Int
+    val footerViewCount: Int
         get() {
             return if (hasFooterView()) {
                 mFooterLayout.childCount
@@ -200,7 +207,7 @@ abstract class BaseRecycleViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter
             }
         }
 
-    fun getItem(@IntRange(from = 0) position: Int):T? {
+    fun getItem(@IntRange(from = 0) position: Int): T? {
         if (position >= data.size) return null
         return data[position]
     }
