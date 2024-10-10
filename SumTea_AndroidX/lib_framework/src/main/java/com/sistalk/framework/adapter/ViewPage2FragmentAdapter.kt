@@ -7,6 +7,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
 /// ViewPage2 Adapter
+/// 用于绑定数据
 class ViewPage2FragmentAdapter(
     fragmentManager: FragmentManager,
     lifecycle: Lifecycle,
