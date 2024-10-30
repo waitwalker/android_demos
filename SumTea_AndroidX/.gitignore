@@ -21,3 +21,4 @@ keyStore
 /app/release/*.apk
 /app/debug/*.aab
 /app/release/*.aab
+/buildSrc/build
